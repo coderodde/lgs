@@ -166,19 +166,43 @@ public class Graph implements Iterable<Node> {
      */
     private class NodeIterator implements Iterator<Node> {
 
+        /**
+         * The actual iterator.
+         */
         private Iterator<Node> iterator = nodeList.iterator();
+        
+        /**
+         * The last returned node.
+         */
         private Node lastReturned;
 
+        /**
+         * Returns <code>true</code> if and only if there is more 
+         * nodes to iterate.
+         * 
+         * @return <code>true</code> if and only if there is more nodes to
+         * iterate.
+         */
         @Override
         public boolean hasNext() {
             return iterator.hasNext();
         }
 
+        /**
+         * Returns the next node or throws 
+         * <code>NoSuchElementException</code> if there is no more 
+         * nodes to iterate.
+         * 
+         * @return the next node.
+         */
         @Override
         public Node next() {
             return (lastReturned = iterator.next());
         }
 
+        /**
+         * Removes the current node from this graph.
+         */
         @Override
         public void remove() {
             if (lastReturned == null) {
@@ -188,6 +212,7 @@ public class Graph implements Iterable<Node> {
 
             iterator.remove();
             nodeMap.remove(lastReturned.getName());
+            lastReturned.clear();
             lastReturned = null;
         }
     }
