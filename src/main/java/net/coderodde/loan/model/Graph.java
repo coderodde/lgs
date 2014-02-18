@@ -160,6 +160,26 @@ public class Graph implements Iterable<Node> {
     public Iterator<Node> iterator() {
         return new NodeIterator();
     }
+    
+    public boolean isEquivalentTo(Graph g) {
+        if (this.size() != g.size()) {
+            return false;
+        }
+        
+        for (Node node : this) {
+            Node tmp = g.get(node.getName());
+            
+            if (tmp == null) {
+                return false;
+            } 
+            
+            if (node.getEquity() != tmp.getEquity()) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
 
     /**
      * This class implements the iterators over this graph's nodes.
