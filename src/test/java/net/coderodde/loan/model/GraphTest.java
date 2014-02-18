@@ -97,33 +97,35 @@ public class GraphTest {
 
     @Test
     public void testClone() {
-        assertEquals(0, g.clone().size());
-        assertEquals(0, g.clone().getEdgeAmount());
-        assertEquals(0L, g.clone().getTotalFlow());
+        Graph clone = new Graph(g);
+        
+        assertEquals(0, clone.size());
+        assertEquals(0, clone.getEdgeAmount());
+        assertEquals(0L, clone.getTotalFlow());
+        
+        clone.add(u);
 
-        g.add(u);
+        assertEquals(1, clone.size());
 
-        assertEquals(1, g.clone().size());
+        clone.add(v);
 
-        g.add(v);
+        assertEquals(2, clone.size());
 
-        assertEquals(2, g.clone().size());
+        clone.add(w);
 
-        g.add(w);
+        clone.get(u.getName()).connectTo(clone.get(v.getName()), 2L);
+        clone.get(v.getName()).connectTo(clone.get(w.getName()), 3L);
+        clone.get(w.getName()).connectTo(clone.get(u.getName()), 4L);
 
-        g.get(u.getName()).connectTo(g.get(v.getName()), 2L);
-        g.get(v.getName()).connectTo(g.get(w.getName()), 3L);
-        g.get(w.getName()).connectTo(g.get(u.getName()), 4L);
+        assertEquals(3, clone.getEdgeAmount());
+        assertEquals(9L, clone.getTotalFlow());
 
-        assertEquals(3, g.getEdgeAmount());
-        assertEquals(9L, g.getTotalFlow());
+        clone.get(w.getName()).connectTo(clone.get(v.getName()), 1L);
 
-        g.get(w.getName()).connectTo(g.get(v.getName()), 1L);
+        assertEquals(4, clone.getEdgeAmount());
+        assertEquals(10L, clone.getTotalFlow());
 
-        assertEquals(4, g.getEdgeAmount());
-        assertEquals(10L, g.getTotalFlow());
-
-        Graph c = g.clone();
+        Graph c = new Graph(clone);
 
         assertEquals(3, c.size());
         assertEquals(0, c.getEdgeAmount());
