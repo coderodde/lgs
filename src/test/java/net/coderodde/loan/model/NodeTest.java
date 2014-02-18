@@ -1,5 +1,8 @@
 package net.coderodde.loan.model;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import net.coderodde.loan.model.Node;
 import org.junit.Before;
 import org.junit.Test;
@@ -144,6 +147,65 @@ public class NodeTest {
 
     @Test
     public void testIterators() {
+        u.connectTo(v, 4L);
+        u.connectTo(w, 5L);
+        v.connectTo(u, 3L);
+        v.connectTo(w, 1L);
+        w.connectTo(u, 3L);
+        w.connectTo(v, 7L);
         
+        List<Node> nodes = new ArrayList<Node>();
+        
+        for (Node n : u) {
+            nodes.add(n);
+        }
+        
+        assertEquals(2, nodes.size());
+        assertEquals(v, nodes.get(0));
+        assertEquals(w, nodes.get(1));
+        
+        nodes.clear();
+        
+        for (Node n : u.parentIterable()) {
+            nodes.add(n);
+        }
+        
+        assertEquals(2, nodes.size());
+        assertEquals(v, nodes.get(0));
+        assertEquals(w, nodes.get(1));
+        
+        int i = 0;
+        Iterator<Node> iter = u.iterator();
+       
+        while (iter.hasNext()) {
+            iter.next();
+
+            if (i == 1) {
+                iter.remove();
+            }
+            
+            i++;
+        }
+        
+        assertEquals(2, i);
+        assertEquals(1, u.getBorrowerAmount());
+        assertEquals(2, u.getLenderAmount());
+        
+        iter = u.parentIterable().iterator();
+        i = 0;
+        
+        while (iter.hasNext()) {
+            iter.next();
+            
+            if (i == 1) {
+                iter.remove();
+            }
+            
+            i++;
+        }
+        
+        assertEquals(2, i);
+        assertEquals(1, u.getBorrowerAmount());
+        assertEquals(1, u.getLenderAmount());
     }
 }
