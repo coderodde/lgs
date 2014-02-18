@@ -98,11 +98,11 @@ public class GraphTest {
     @Test
     public void testClone() {
         Graph clone = new Graph(g);
-        
+
         assertEquals(0, clone.size());
         assertEquals(0, clone.getEdgeAmount());
         assertEquals(0L, clone.getTotalFlow());
-        
+
         clone.add(u);
 
         assertEquals(1, clone.size());
@@ -242,5 +242,50 @@ public class GraphTest {
 
         assertEquals(nodes.get(0), u);
         assertEquals(nodes.get(1), w);
+    }
+
+    @Test
+    public void testEquivalencyCheck() {
+        g.add(u);
+        g.add(v);
+        g.add(w);
+
+        Graph c = new Graph();
+
+        c.add(new Node(u));
+        c.add(new Node(v));
+
+        assertFalse(g.isEquivalentTo(c));
+
+        c.add(new Node(w));
+
+        assertTrue(g.isEquivalentTo(c));
+
+        Node x = new Node("X");
+        c.add(x);
+
+        assertFalse(g.isEquivalentTo(c));
+
+        c.remove(x);
+
+        assertTrue(g.isEquivalentTo(c));
+
+        g.get(0).connectTo(g.get(1), 4L);
+
+        assertFalse(g.isEquivalentTo(c));
+
+        c.get(0).connectTo(c.get(1), 4L);
+
+        assertTrue(g.isEquivalentTo(c));
+
+        c.get(1).connectTo(c.get(0), 3L);
+
+        assertFalse(g.isEquivalentTo(c));
+
+        g.get(0).removeBorrower(g.get(1));
+
+        g.get(0).connectTo(g.get(1), 1L);
+
+        assertTrue(g.isEquivalentTo(c));
     }
 }

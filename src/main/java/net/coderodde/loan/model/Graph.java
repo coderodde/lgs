@@ -19,19 +19,19 @@ public class Graph implements Iterable<Node> {
      * This map maps name of the nodes to respective node objects.
      */
     private Map<String, Node> nodeMap;
-    
+
     /**
      * This list contains all the nodes currently stored in this graph.
      */
     private List<Node> nodeList;
-    
+
     /**
      * This variable caches the amount of edges in this graph.
      */
     protected int edgeAmount;
-    
+
     /**
-     * This variable caches the total flow of this graph 
+     * This variable caches the total flow of this graph
      * (sum of edge weights).
      */
     protected long flow;
@@ -43,16 +43,16 @@ public class Graph implements Iterable<Node> {
         nodeMap = new LinkedHashMap<String, Node>();
         nodeList = new ArrayList<Node>();
     }
-    
+
     /**
-     * Constructs a graph with the same amount of nodes as in 
+     * Constructs a graph with the same amount of nodes as in
      * <code>copy</code> with the same node names. Edges are not copied.
-     * 
-     * @param copy the graph to copy. 
+     *
+     * @param copy the graph to copy.
      */
     public Graph(Graph copy) {
         this();
-        
+
         for (Node node : copy) {
             Node newNode = new Node(node);
             nodeMap.put(newNode.getName(), newNode);
@@ -62,14 +62,14 @@ public class Graph implements Iterable<Node> {
 
     /**
      * Adds a node to this graph if not present.
-     * 
+     *
      * @param node the node to add.
      */
     public void add(Node node) {
         if (nodeMap.containsKey(node.getName())) {
             return;
         }
-        
+
         node.ownerGraph = this;
         node.clear();
         nodeMap.put(node.getName(), node);
@@ -78,7 +78,7 @@ public class Graph implements Iterable<Node> {
 
     /**
      * Checks whether a node is included in this graph.
-     * 
+     *
      * @param node the node to query.
      * @return <code>true</code> if this graph contains the query node;
      * <code>false</code> otherwise.
@@ -89,7 +89,7 @@ public class Graph implements Iterable<Node> {
 
     /**
      * Returns a node with index <code>index</code>.
-     * 
+     *
      * @param index the node index.
      * @return the node at index <code>index</code>.
      */
@@ -99,7 +99,7 @@ public class Graph implements Iterable<Node> {
 
     /**
      * Returns a node with name <code>name</code>.
-     * 
+     *
      * @param name the name of the query node.
      * @return the node with name <code>name</code>; <code>null</code>
      * otherwise.
@@ -110,8 +110,8 @@ public class Graph implements Iterable<Node> {
 
     /**
      * Removes a node from this graph if present.
-     * 
-     * @param node the node to remove. 
+     *
+     * @param node the node to remove.
      */
     public void remove(Node node) {
         if (nodeMap.containsKey(node.getName())) {
@@ -126,7 +126,7 @@ public class Graph implements Iterable<Node> {
 
     /**
      * Returns the amount of nodes in this graph.
-     * 
+     *
      * @return the amount of nodes in this graph.
      */
     public int size() {
@@ -135,7 +135,7 @@ public class Graph implements Iterable<Node> {
 
     /**
      * Returns the amount of edges in this graph.
-     * 
+     *
      * @return the amount of edges in this graph.
      */
     public int getEdgeAmount() {
@@ -144,7 +144,7 @@ public class Graph implements Iterable<Node> {
 
     /**
      * Returns the total flow (sum of all edge weights) of this graph.
-     * 
+     *
      * @return the total flow of this graph.
      */
     public long getTotalFlow() {
@@ -153,31 +153,31 @@ public class Graph implements Iterable<Node> {
 
     /**
      * Returns an iterator over this graph's nodes.
-     * 
+     *
      * @return an iterator over this graph's nodes.
      */
     @Override
     public Iterator<Node> iterator() {
         return new NodeIterator();
     }
-    
+
     public boolean isEquivalentTo(Graph g) {
         if (this.size() != g.size()) {
             return false;
         }
-        
+
         for (Node node : this) {
             Node tmp = g.get(node.getName());
-            
+
             if (tmp == null) {
                 return false;
-            } 
-            
+            }
+
             if (node.getEquity() != tmp.getEquity()) {
                 return false;
             }
         }
-        
+
         return true;
     }
 
@@ -190,16 +190,16 @@ public class Graph implements Iterable<Node> {
          * The actual iterator.
          */
         private Iterator<Node> iterator = nodeList.iterator();
-        
+
         /**
          * The last returned node.
          */
         private Node lastReturned;
 
         /**
-         * Returns <code>true</code> if and only if there is more 
+         * Returns <code>true</code> if and only if there is more
          * nodes to iterate.
-         * 
+         *
          * @return <code>true</code> if and only if there is more nodes to
          * iterate.
          */
@@ -209,10 +209,10 @@ public class Graph implements Iterable<Node> {
         }
 
         /**
-         * Returns the next node or throws 
-         * <code>NoSuchElementException</code> if there is no more 
+         * Returns the next node or throws
+         * <code>NoSuchElementException</code> if there is no more
          * nodes to iterate.
-         * 
+         *
          * @return the next node.
          */
         @Override
