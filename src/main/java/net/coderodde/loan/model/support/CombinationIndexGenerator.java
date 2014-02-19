@@ -86,6 +86,60 @@ class CombinationIndexGenerator {
         }
     }
 
+    boolean hasNoGaps() {
+        for (int i = 0; i < k - 1; ++i) {
+            if (indices[i] + 1 != indices[i + 1]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    void remove() {
+        final int oldn = n;
+        n -= k;
+
+        if (n < k) {
+            k = n;
+            indices = new int[k];
+
+            for (int i = 0; i < k; ++i) {
+                indices[i] = i;
+            }
+        } else if (n == k) {
+            if (indices[0] == 0) {
+                for (int i = 0; i < k - 1; ++i) {
+                    indices[i] = i;
+                }
+
+                indices[k - 1] = k - 2;
+            } else {
+                for (int i = 0; i < k; ++i) {
+                    indices[i] = i;
+                }
+            }
+        } else {
+            final int emptyRightSpots = oldn - k - indices[0];
+
+            if (emptyRightSpots < k) {
+                indices = new int[++k];
+
+                for (int i = 1; i < k; ++i) {
+                    indices[i] = i;
+                }
+
+                --indices[k - 1];
+            } else {
+                for (int i = 1, j = indices[0] + 1; i < k; ++i, ++j) {
+                    indices[i] = j;
+                }
+
+                --indices[k - 1];
+            }
+        }
+    }
+
     private void checkSize(final int n) {
         if (n < MINIMUM_SIZE) {
             throw new IllegalArgumentException(
