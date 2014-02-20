@@ -1,6 +1,7 @@
 package net.coderodde.loan.model.support;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import net.coderodde.loan.model.Graph;
@@ -162,30 +163,49 @@ public class Utils {
         return edgeAmount;
     }
 
+    static Pair<List<Node>, List<Node>>
+            splitFromGraph(Graph g,
+                           List<Node> positiveNodeList,
+                           List<Node> negativeNodeList,
+                           int[] positiveIndices,
+                           int[] negativeIndices) {
+        List<Node> newPositiveNodeList;
+        List<Node> newNegativeNodeList;
+
+        newPositiveNodeList = new ArrayList<Node>(positiveNodeList.size());
+        newNegativeNodeList = new ArrayList<Node>(negativeNodeList.size());
+        int i = 0;
+
+        for (int index : positiveIndices) {
+            newPositiveNodeList
+                    .add(g.get(positiveNodeList.get(index).getName()));
+        }
+
+        for (int index : negativeIndices) {
+            newNegativeNodeList
+                    .add(g.get(negativeNodeList.get(index).getName()));
+        }
+
+        return new Pair<List<Node>, List<Node>>(newPositiveNodeList,
+                                                newNegativeNodeList);
+    }
+
+    static final long sumNodeEquities(List<Node> nodeList, int[] indices) {
+        long sum = 0;
+
+        for (int index : indices) {
+            sum += nodeList.get(index).getEquity();
+        }
+
+        return sum;
+    }
+
     static final void checkEquityArray(long[] equities) {
         for (long l : equities) {
             if (l < 1L) {
                 throw new IllegalStateException(
                         "Illegal equity: " + l + "; must be at least 1.");
             }
-        }
-    }
-
-    static final void checkIsGroup(long[] positiveEquities,
-                                   long[] negativeEquities) {
-        long sum = 0L;
-
-        for (long l : positiveEquities) {
-            sum += l;
-        }
-
-        for (long l : negativeEquities) {
-            sum -= l;
-        }
-
-        if (sum != 0) {
-            throw new IllegalStateException(
-                    "Not a group equities; sum: " + sum);
         }
     }
 
@@ -213,6 +233,82 @@ public class Utils {
 
         if (sum != 0L) {
             throw new IllegalStateException("Not a group.");
+        }
+    }
+
+    static final void checkIsGroup(long[] positiveEquities,
+                                   long[] negativeEquities) {
+        long sum = 0L;
+
+        for (long l : positiveEquities) {
+            sum += l;
+        }
+
+        for (long l : negativeEquities) {
+            sum -= l;
+        }
+
+        if (sum != 0) {
+            throw new IllegalStateException(
+                    "Not a group equities; sum: " + sum);
+        }
+    }
+
+    /**
+     * Returns the array of nodes taken from a list;
+     *
+     * @param nodeList the nodes to return in an array.
+     *
+     * @return the array of nodes.
+     */
+    static Node[] toArray(List<Node> nodeList) {
+        Node[] array = new Node[nodeList.size()];
+        int index = 0;
+
+        for (Node node : nodeList) {
+            array[index++] = node;
+        }
+
+        return array;
+    }
+
+    static List<Node> toList(Node... nodes) {
+        List<Node> list = new ArrayList<Node>(nodes.length);
+
+        for (Node node : nodes) {
+            list.add(node);
+        }
+
+        return list;
+    }
+
+    final static EquityComparator equityComparator = new EquityComparator();
+
+    /**
+     * This class compares nodes by absolute values of their equities.
+     */
+    static class EquityComparator implements Comparator<Node> {
+
+        /**
+         * Returns following values: <ul>
+         *   <li>-1 if and only if the equity of <code>o1</code> is less than
+         *       <code>o2</code> in absolute value,</li>
+         *   <li>1 if and only if the equity of <code>o1</code> is more than
+         *       <code>o2</code> in absolute value,</li>
+         *   <li>0 if and only if the equities of two nodes are same in
+         *       absolute value.</li>
+         * </ul>
+         *
+         * @param o1 the first node.
+         * @param o2 the second node.
+         *
+         * @return (See above.)
+         */
+        @Override
+        public int compare(Node o1, Node o2) {
+            long e1 = Math.abs(o1.getEquity());
+            long e2 = Math.abs(o2.getEquity());
+            return e1 < e2 ? -1 : (e1 > e2 ? 1 : 0);
         }
     }
 }

@@ -4,6 +4,7 @@ import java.util.Random;
 import net.coderodde.loan.model.Algorithm;
 import net.coderodde.loan.model.Graph;
 import net.coderodde.loan.model.Node;
+import net.coderodde.loan.model.support.GreedyCombinatorialSimplifier;
 import net.coderodde.loan.model.support.LinearSimplifier;
 
 /**
@@ -25,7 +26,14 @@ public class Demo {
 
         Graph input = createGraph(N, 0.5f, 30L, r);
 
+        System.out.println(
+                "Amount of edges in the input graph: " + input.getEdgeAmount());
+
+        System.out.println(
+                "The total flow of the input graph:  " + input.getTotalFlow());
+
         profile(new LinearSimplifier(), input);
+        profile(new GreedyCombinatorialSimplifier(), input);
     }
 
     private static final void profile(Algorithm algorithm, Graph graph) {
@@ -36,8 +44,9 @@ public class Demo {
         long tb = System.currentTimeMillis();
 
         System.out.println("Time: " + (tb - ta) + " ms.");
+        System.out.println("Edges left: " + result.getEdgeAmount());
+        System.out.println("Total flow: " + result.getTotalFlow());
         System.out.println("Equivalent: " + graph.isEquivalentTo(result));
-        bar();
     }
 
     private static final Graph createGraph(final int size,

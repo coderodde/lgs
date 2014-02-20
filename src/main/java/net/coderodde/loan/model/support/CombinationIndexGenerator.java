@@ -96,6 +96,11 @@ class CombinationIndexGenerator {
         return true;
     }
 
+    void reset() {
+        k = 1;
+        indices = new int[]{ -1 };
+    }
+
     void remove() {
         final int oldn = n;
         n -= k;
@@ -128,15 +133,13 @@ class CombinationIndexGenerator {
                 for (int i = 1; i < k; ++i) {
                     indices[i] = i;
                 }
-
-                --indices[k - 1];
             } else {
                 for (int i = 1, j = indices[0] + 1; i < k; ++i, ++j) {
                     indices[i] = j;
                 }
-
-                --indices[k - 1];
             }
+
+            --indices[k - 1];
         }
     }
 
