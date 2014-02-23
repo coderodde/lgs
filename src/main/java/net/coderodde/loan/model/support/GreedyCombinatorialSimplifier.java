@@ -9,7 +9,7 @@ import net.coderodde.loan.model.Node;
 import net.coderodde.loan.model.support.Utils.Pair;
 import net.coderodde.loan.model.support.Utils.Triple;
 import static net.coderodde.loan.model.support.Utils.equityComparator;
-import static net.coderodde.loan.model.support.Utils.getEquityArray;
+import static net.coderodde.loan.model.support.Utils.removeNodesFromLists;
 import static net.coderodde.loan.model.support.Utils.link;
 import static net.coderodde.loan.model.support.Utils.split;
 import static net.coderodde.loan.model.support.Utils.splitFromGraph;
@@ -63,22 +63,38 @@ public class GreedyCombinatorialSimplifier implements Algorithm {
 
                     continue outer;
                 } else if (currentPositiveSum == currentNegativeSum) {
-                    Pair<List<Node>, List<Node>> pair =
+                    System.out.print(currentPositiveSum + ": ");
+
+                    for (int i : positiveIndices) {
+                        System.out.print(positiveNodeList.get(i).getEquity() + " ");
+                    }
+
+                    for (int i : negativeIndices) {
+                        System.out.print(negativeNodeList.get(i).getEquity() + " ");
+                    }
+
+                    System.out.println();
+
+                    Pair<Pair<List<Node>, List<Node>>,
+                         Pair<long[], long[]>> data =
                             splitFromGraph(ret,
                                            positiveNodeList,
                                            negativeNodeList,
                                            positiveIndices,
                                            negativeIndices);
 
-                    link(pair.first,
-                         pair.second,
-                         getEquityArray(pair.first),
-                         getEquityArray(pair.second)
-                         );
+                    link(data.first.first,
+                         data.first.second,
+                         data.second.first,
+                         data.second.second);
+
+                    removeNodesFromLists(positiveNodeList,
+                                         negativeNodeList,
+                                         positiveIndices,
+                                         negativeIndices);
 
                     positiveGenerator.remove();
                     negativeGenerator.remove();
-                    negativeGenerator.reset();
                     continue outer;
                 }
             }

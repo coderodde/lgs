@@ -34,6 +34,8 @@ public class Demo {
 
         profile(new LinearSimplifier(), input);
         profile(new GreedyCombinatorialSimplifier(), input);
+        bar();
+        System.out.println("Bye, bye!");
     }
 
     private static final void profile(Algorithm algorithm, Graph graph) {

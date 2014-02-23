@@ -163,7 +163,7 @@ public class Utils {
         return edgeAmount;
     }
 
-    static Pair<List<Node>, List<Node>>
+    static Pair<Pair<List<Node>, List<Node>>, Pair<long[], long[]>>
             splitFromGraph(Graph g,
                            List<Node> positiveNodeList,
                            List<Node> negativeNodeList,
@@ -172,22 +172,36 @@ public class Utils {
         List<Node> newPositiveNodeList;
         List<Node> newNegativeNodeList;
 
-        newPositiveNodeList = new ArrayList<Node>(positiveNodeList.size());
-        newNegativeNodeList = new ArrayList<Node>(negativeNodeList.size());
+        newPositiveNodeList = new ArrayList<Node>(positiveIndices.length);
+        newNegativeNodeList = new ArrayList<Node>(negativeIndices.length);
+
+        long[] newPositiveEquityArray = new long[positiveIndices.length];
+        long[] newNegativeEquityArray = new long[negativeIndices.length];
+
         int i = 0;
 
         for (int index : positiveIndices) {
-            newPositiveNodeList
-                    .add(g.get(positiveNodeList.get(index).getName()));
+            Node node = positiveNodeList.get(index);
+            newPositiveNodeList.add(g.get(node.getName()));
+            newPositiveEquityArray[i++] = node.getEquity();
         }
+
+        i = 0;
 
         for (int index : negativeIndices) {
-            newNegativeNodeList
-                    .add(g.get(negativeNodeList.get(index).getName()));
+            Node node = negativeNodeList.get(index);
+            newNegativeNodeList.add(g.get(node.getName()));
+            newNegativeEquityArray[i++] = -node.getEquity();
         }
 
-        return new Pair<List<Node>, List<Node>>(newPositiveNodeList,
-                                                newNegativeNodeList);
+        return new Pair<Pair<List<Node>, List<Node>>,
+                        Pair<long[], long[]>>(
+                            new Pair<List<Node>, List<Node>>(
+                                newPositiveNodeList,
+                                newNegativeNodeList),
+                            new Pair<long[], long[]>(
+                                newPositiveEquityArray,
+                                newNegativeEquityArray));
     }
 
     static final long sumNodeEquities(List<Node> nodeList, int[] indices) {
@@ -197,7 +211,7 @@ public class Utils {
             sum += nodeList.get(index).getEquity();
         }
 
-        return sum;
+        return Math.abs(sum);
     }
 
     static final void checkEquityArray(long[] equities) {
@@ -208,6 +222,20 @@ public class Utils {
             }
         }
     }
+
+    static final void removeNodesFromLists(List<Node> positiveNodes,
+                                           List<Node> negativeNodes,
+                                           int[] positiveIndices,
+                                           int[] negativeIndices) {
+        for (int i = positiveIndices.length - 1; i >= 0; --i) {
+            positiveNodes.remove(i);
+        }
+
+        for (int i = negativeIndices.length - 1; i >= 0; --i) {
+            negativeNodes.remove(i);
+        }
+    }
+
 
     static final void checkGroup(List<Node> positiveNodeList,
                                   List<Node> negativeNodeList) {

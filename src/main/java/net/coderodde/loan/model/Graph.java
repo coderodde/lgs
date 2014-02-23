@@ -54,14 +54,12 @@ public class Graph implements Iterable<Node> {
         this();
 
         for (Node node : copy) {
-            Node newNode = new Node(node);
-            nodeMap.put(newNode.getName(), newNode);
-            nodeList.add(newNode);
+            add(new Node(node));
         }
     }
 
     /**
-     * Adds a node to this graph if not present.
+     * Adds a node to this graph if not already in this graph.
      *
      * @param node the node to add.
      */
@@ -70,8 +68,8 @@ public class Graph implements Iterable<Node> {
             return;
         }
 
-        node.ownerGraph = this;
         node.clear();
+        node.ownerGraph = this;
         nodeMap.put(node.getName(), node);
         nodeList.add(node);
     }

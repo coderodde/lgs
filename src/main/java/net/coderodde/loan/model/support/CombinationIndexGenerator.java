@@ -39,7 +39,7 @@ class CombinationIndexGenerator {
         checkSize(n);
         this.n = n;
         this.k = 1;
-        this.indices = new int[k];
+        this.indices = new int[1];
         this.indices[0] = -1;
     }
 
@@ -51,6 +51,10 @@ class CombinationIndexGenerator {
      * lists to generate.
      */
     int[] inc() {
+        if (k < 1 || k > n) {
+            return null;
+        }
+
         if (indices[k - 1] == n - 1) {
             int i;
 
@@ -106,12 +110,12 @@ class CombinationIndexGenerator {
         n -= k;
 
         if (n < k) {
-            k = n;
-            indices = new int[k];
-
-            for (int i = 0; i < k; ++i) {
-                indices[i] = i;
-            }
+//            k = n;
+//            indices = new int[k];
+//
+//            for (int i = 0; i < k; ++i) {
+//                indices[i] = i;
+//            }
         } else if (n == k) {
             if (indices[0] == 0) {
                 for (int i = 0; i < k - 1; ++i) {
