@@ -74,6 +74,7 @@ class CombinationIndexGenerator {
             k++;
 
             if (k > n) {
+                --k;
                 return null;
             }
 
@@ -110,12 +111,12 @@ class CombinationIndexGenerator {
         n -= k;
 
         if (n < k) {
-//            k = n;
-//            indices = new int[k];
-//
-//            for (int i = 0; i < k; ++i) {
-//                indices[i] = i;
-//            }
+            k = n;
+            indices = new int[k];
+
+            for (int i = 0; i < k; ++i) {
+                indices[i] = i;
+            }
         } else if (n == k) {
             if (indices[0] == 0) {
                 for (int i = 0; i < k - 1; ++i) {

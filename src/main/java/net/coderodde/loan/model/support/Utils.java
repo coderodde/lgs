@@ -228,11 +228,11 @@ public class Utils {
                                            int[] positiveIndices,
                                            int[] negativeIndices) {
         for (int i = positiveIndices.length - 1; i >= 0; --i) {
-            positiveNodes.remove(i);
+            positiveNodes.remove(positiveIndices[i]);
         }
 
         for (int i = negativeIndices.length - 1; i >= 0; --i) {
-            negativeNodes.remove(i);
+            negativeNodes.remove(negativeIndices[i]);
         }
     }
 

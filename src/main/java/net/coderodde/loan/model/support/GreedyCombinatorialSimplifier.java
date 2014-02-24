@@ -96,6 +96,7 @@ public class GreedyCombinatorialSimplifier implements Algorithm {
                     positiveGenerator.remove();
                     negativeGenerator.remove();
                     continue outer;
+                    // Yo, yo! :^)
                 }
             }
         }
