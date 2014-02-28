@@ -110,7 +110,7 @@ class CombinationIndexGenerator {
         final int oldn = n;
         n -= k;
 
-        if (n < k) {
+        if (k > n) {
             k = n;
             indices = new int[k];
 

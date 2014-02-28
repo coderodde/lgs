@@ -18,8 +18,8 @@ public class Demo {
     public static void main(String... args) {
         title("Profiling the simplification algorithms");
 
-        final long SEED = System.currentTimeMillis(); //1393260761409L; //System.currentTimeMillis();
-        final int N = 12;
+        final long SEED = System.currentTimeMillis();
+        final int N = 300;
         final Random r = new Random(SEED);
 
         System.out.println("Seed: " + SEED);

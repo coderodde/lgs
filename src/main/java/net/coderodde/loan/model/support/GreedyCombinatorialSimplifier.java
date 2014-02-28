@@ -38,11 +38,8 @@ public class GreedyCombinatorialSimplifier implements Algorithm {
         Collections.sort(positiveNodeList, equityComparator);
         Collections.sort(negativeNodeList, equityComparator);
 
-        CombinationIndexGenerator positiveGenerator;
-        CombinationIndexGenerator negativeGenerator;
-
-        positiveGenerator = new CombinationIndexGenerator(triple.first.size());
-        negativeGenerator = new CombinationIndexGenerator(triple.second.size());
+        CombinationIndexGenerator positiveGenerator =
+                new CombinationIndexGenerator(positiveNodeList.size());
 
         int[] positiveIndices;
         int[] negativeIndices;
@@ -52,28 +49,30 @@ public class GreedyCombinatorialSimplifier implements Algorithm {
             long currentPositiveSum = sumNodeEquities(positiveNodeList,
                                                       positiveIndices);
 
+            CombinationIndexGenerator negativeGenerator =
+                    new CombinationIndexGenerator(negativeNodeList.size());
+
             while ((negativeIndices = negativeGenerator.inc()) != null) {
                 long currentNegativeSum = sumNodeEquities(negativeNodeList,
                                                           negativeIndices);
 
                 if (currentNegativeSum > currentPositiveSum) {
-                    if (negativeGenerator.hasNoGaps()) {
-                        negativeGenerator.reset();
+                    if (negativeIndices[0] == 0
+                            && negativeGenerator.hasNoGaps()) {
+                        continue outer;
                     }
-
-                    continue outer;
                 } else if (currentPositiveSum == currentNegativeSum) {
-                    System.out.print(currentPositiveSum + ": ");
-
-                    for (int i : positiveIndices) {
-                        System.out.print(positiveNodeList.get(i).getEquity() + " ");
-                    }
-
-                    for (int i : negativeIndices) {
-                        System.out.print(negativeNodeList.get(i).getEquity() + " ");
-                    }
-
-                    System.out.println();
+//                    System.out.print(currentPositiveSum + ": ");
+//
+//                    for (int i : positiveIndices) {
+//                        System.out.print(positiveNodeList.get(i).getEquity() + " ");
+//                    }
+//
+//                    for (int i : negativeIndices) {
+//                        System.out.print(negativeNodeList.get(i).getEquity() + " ");
+//                    }
+//
+//                    System.out.println();
 
                     Pair<Pair<List<Node>, List<Node>>,
                          Pair<long[], long[]>> data =
@@ -94,9 +93,7 @@ public class GreedyCombinatorialSimplifier implements Algorithm {
                                          negativeIndices);
 
                     positiveGenerator.remove();
-                    negativeGenerator.remove();
                     continue outer;
-                    // Yo, yo! :^)
                 }
             }
         }
