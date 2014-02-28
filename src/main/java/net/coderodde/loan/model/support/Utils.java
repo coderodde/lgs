@@ -2,8 +2,10 @@ package net.coderodde.loan.model.support;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import net.coderodde.loan.model.Graph;
 import net.coderodde.loan.model.Node;
 
@@ -78,6 +80,72 @@ public class Utils {
         return new Triple<List<Node>, List<Node>, List<Node>>(positiveNodeList,
                                                               negativeNodeList,
                                                               zeroNodeList);
+    }
+
+    static final void linkGroup(Set<Node> group, Graph in) {
+        List<Node> positiveNodeList = new ArrayList<Node>(group.size());
+        List<Node> negativeNodeList = new ArrayList<Node>(group.size());
+
+        for (Node node : group) {
+            if (node.getEquity() > 0L) {
+                positiveNodeList.add(in.get(node.getName()));
+            } else if (node.getEquity() < 0L) {
+                negativeNodeList.add(in.get(node.getName()));
+            }
+        }
+
+        long[] positiveEquityArray = new long[positiveNodeList.size()];
+        long[] negativeEquityArray = new long[negativeNodeList.size()];
+
+        int pi = 0;
+        int ni = 0;
+
+        for (Node node : group) {
+            long e = node.getEquity();
+
+            if (e > 0L) {
+                positiveEquityArray[pi++] = e;
+            } else if (e < 0L) {
+                negativeEquityArray[ni++] = -e;
+            } else {
+                throw new IllegalStateException("Zero equity node encounterd.");
+            }
+        }
+
+        link(positiveNodeList,
+             negativeNodeList,
+             positiveEquityArray,
+             negativeEquityArray);
+    }
+
+    static final int resolveBinaryGroups(List<Node> positiveNodeList,
+                                          List<Node> negativeNodeList,
+                                          Graph graph) {
+
+        long[] positiveEquityArray = getEquityArray(positiveNodeList);
+        long[] negativeEquityArray = getEquityArray(negativeNodeList);
+
+        int pi = positiveEquityArray.length - 1;
+        int ni = negativeEquityArray.length - 1;
+
+        int resolved = 0;
+
+        while (pi >= 0 && ni >= 0) {
+            if (positiveEquityArray[pi] > negativeEquityArray[ni]) {
+                --pi;
+            } else if (positiveEquityArray[pi] < negativeEquityArray[ni]) {
+                --ni;
+            } else {
+                graph.get(positiveNodeList.get(pi).getName())
+                     .connectTo(graph.get(negativeNodeList.get(ni).getName()),
+                     positiveEquityArray[pi]);
+                positiveNodeList.remove(pi--);
+                negativeNodeList.remove(ni--);
+                resolved++;
+            }
+        }
+
+        return resolved;
     }
 
     static final List<Node> copy(List<Node> nodeList) {
@@ -223,6 +291,24 @@ public class Utils {
         }
     }
 
+    static final Set<Node> createGroup(List<Node> positiveNodeList,
+                                       List<Node> negativeNodeList,
+                                       int[] positiveIndices,
+                                       int[] negativeIndices) {
+        Set<Node> group = new HashSet<Node>(positiveIndices.length +
+                                            negativeIndices.length);
+
+        for (int i : positiveIndices) {
+            group.add(positiveNodeList.get(i));
+        }
+
+        for (int i : negativeIndices) {
+            group.add(negativeNodeList.get(i));
+        }
+
+        return group;
+    }
+
     static final void removeNodesFromLists(List<Node> positiveNodes,
                                            List<Node> negativeNodes,
                                            int[] positiveIndices,
@@ -238,7 +324,7 @@ public class Utils {
 
 
     static final void checkGroup(List<Node> positiveNodeList,
-                                  List<Node> negativeNodeList) {
+                                 List<Node> negativeNodeList) {
         long sum = 0L;
 
         for (Node node : positiveNodeList) {
@@ -308,6 +394,17 @@ public class Utils {
         }
 
         return list;
+    }
+
+    final static GroupOrderComparator groupOrderComparator =
+             new GroupOrderComparator();
+
+    static class GroupOrderComparator implements Comparator<Set<Node>> {
+
+        @Override
+        public int compare(Set<Node> g1, Set<Node> g2) {
+            return g1.size() - g2.size();
+        }
     }
 
     final static EquityComparator equityComparator = new EquityComparator();

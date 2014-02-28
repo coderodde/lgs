@@ -25,11 +25,12 @@ public class GreedyCombinatorialSimplifier implements Algorithm {
 
     @Override
     public Graph simplify(Graph g) {
+        Graph ret = new Graph(g);
+
         if (g.size() < 2) {
-            return g;
+            return ret;
         }
 
-        Graph ret = new Graph(g);
         Triple<List<Node>, List<Node>, List<Node>> triple = split(g);
 
         List<Node> positiveNodeList = triple.first;

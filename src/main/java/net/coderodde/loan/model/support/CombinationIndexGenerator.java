@@ -91,6 +91,10 @@ class CombinationIndexGenerator {
         }
     }
 
+    int getK() {
+        return k;
+    }
+
     boolean hasNoGaps() {
         for (int i = 0; i < k - 1; ++i) {
             if (indices[i] + 1 != indices[i + 1]) {
