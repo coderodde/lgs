@@ -5,7 +5,7 @@ import net.coderodde.loan.model.Algorithm;
 import net.coderodde.loan.model.Graph;
 import net.coderodde.loan.model.Node;
 import net.coderodde.loan.model.support.ExactCombinatorialSimplifier;
-import net.coderodde.loan.model.support.ExactCombinatorialSimplifier2;
+import net.coderodde.loan.model.support.FasterExactCombinatorialSimplifier;
 import net.coderodde.loan.model.support.GreedyCombinatorialSimplifier;
 import net.coderodde.loan.model.support.LinearSimplifier;
 
@@ -20,7 +20,7 @@ public class Demo {
     public static void main(String... args) {
         title("Profiling the simplification algorithms");
 
-        final long SEED = 1393611839332L; //System.currentTimeMillis();
+        final long SEED = System.currentTimeMillis();
         final int N = 10;
         final Random r = new Random(SEED);
 
@@ -36,8 +36,8 @@ public class Demo {
 
         profile(new LinearSimplifier(), input);
         profile(new GreedyCombinatorialSimplifier(), input);
+        profile(new FasterExactCombinatorialSimplifier(), input);
         profile(new ExactCombinatorialSimplifier(), input);
-        profile(new ExactCombinatorialSimplifier2(), input);
         bar();
         System.out.println("Bye, bye!");
     }

@@ -26,7 +26,7 @@ import static net.coderodde.loan.model.support.Utils.sumNodeEquities;
  * @author coderodde
  * @version 1.6
  */
-public class ExactCombinatorialSimplifier2 implements Algorithm {
+public class FasterExactCombinatorialSimplifier implements Algorithm {
 
     @Override
     public Graph simplify(Graph g) {
