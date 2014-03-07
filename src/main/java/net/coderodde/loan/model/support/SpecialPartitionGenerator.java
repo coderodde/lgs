@@ -111,16 +111,17 @@ class SpecialPartitionGenerator {
         for (int i : arr) {
             System.out.print(i + " ");
         }
-
-        System.out.println();
     }
 
     public static void main(String... args) {
-        SpecialPartitionGenerator pg = new SpecialPartitionGenerator(4, 2);
+        SpecialPartitionGenerator pg = new SpecialPartitionGenerator(10, 3);
         int[] indices = pg.getIndices();
+        int row = 1;
 
         do {
+            System.out.printf("%4d: ", row++);
             print(indices);
+            System.out.println();
         } while (pg.inc());
     }
 }

@@ -73,6 +73,18 @@ class PartitionGenerator {
         return s;
     }
 
+    int getk() {
+        int i = 0;
+
+        for (int j : s) {
+            if (i < j) {
+                i = j;
+            }
+        }
+
+        return i + 1;
+    }
+
     /**
      * Checks whether the size of the set is positive.
      *

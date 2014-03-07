@@ -8,6 +8,7 @@ import net.coderodde.loan.model.support.ExactCombinatorialSimplifier;
 import net.coderodde.loan.model.support.FasterExactCombinatorialSimplifier;
 import net.coderodde.loan.model.support.GreedyCombinatorialSimplifier;
 import net.coderodde.loan.model.support.LinearSimplifier;
+import net.coderodde.loan.model.support.PartitionalSimplifier;
 
 /**
  * This class is the entry for performance demo.
@@ -38,7 +39,10 @@ public class Demo {
         profile(new GreedyCombinatorialSimplifier(), input);
         profile(new FasterExactCombinatorialSimplifier(), input);
         profile(new ExactCombinatorialSimplifier(), input);
+        profile(new PartitionalSimplifier(), input);
+
         bar();
+
         System.out.println("Bye, bye!");
     }
 

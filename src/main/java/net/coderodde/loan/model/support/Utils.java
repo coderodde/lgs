@@ -82,6 +82,17 @@ public class Utils {
                                                               zeroNodeList);
     }
 
+    static final void linkGroup(List<Node> positiveNodeList,
+                                List<Node> negativeNodeList,
+                                Graph graph) {
+        Set<Node> group = new HashSet<Node>(positiveNodeList.size() +
+                                            negativeNodeList.size());
+
+        group.addAll(positiveNodeList);
+        group.addAll(negativeNodeList);
+        linkGroup(group, graph);
+    }
+
     static final void linkGroup(Set<Node> group, Graph in) {
         List<Node> positiveNodeList = new ArrayList<Node>(group.size());
         List<Node> negativeNodeList = new ArrayList<Node>(group.size());
@@ -282,6 +293,16 @@ public class Utils {
         return Math.abs(sum);
     }
 
+    static final long sumNodeEquities(List<Node> nodeList) {
+        long sum = 0L;
+
+        for (Node node : nodeList) {
+            sum += node.getEquity();
+        }
+
+        return Math.abs(sum);
+    }
+
     static final void checkEquityArray(long[] equities) {
         for (long l : equities) {
             if (l < 1L) {
@@ -434,6 +455,101 @@ public class Utils {
             long e1 = Math.abs(o1.getEquity());
             long e2 = Math.abs(o2.getEquity());
             return e1 < e2 ? -1 : (e1 > e2 ? 1 : 0);
+        }
+    }
+
+    static int countLinkageEdges(List<Node> positiveNodeList,
+                                 List<Node> negativeNodeList,
+                                 int[] positivePartition,
+                                 int[] negativePartition) {
+        int k = 0;
+
+        for (int i : positivePartition) {
+            k = Math.max(k, i);
+        }
+
+        ++k;
+
+        List<Node>[] positiveMap = new List[k];
+        List<Node>[] negativeMap = new List[k];
+
+        int i = 0;
+
+        for (int index : positivePartition) {
+            if (positiveMap[index] == null) {
+                positiveMap[index] =
+                        new ArrayList<Node>(positivePartition.length);
+            }
+
+            positiveMap[index].add(positiveNodeList.get(i++));
+        }
+
+        i = 0;
+
+        for (int index : negativePartition) {
+            if (negativeMap[index] == null) {
+                negativeMap[index] =
+                        new ArrayList<Node>(negativePartition.length);
+            }
+
+            negativeMap[index].add(negativeNodeList.get(i++));
+        }
+
+        for (i = 0; i < k; ++i) {
+            if (sumNodeEquities(positiveMap[i])
+                    != sumNodeEquities(negativeMap[i])) {
+                return Integer.MAX_VALUE;
+            }
+        }
+
+        return positiveNodeList.size() + negativeNodeList.size() - k;
+    }
+
+    static void linkPartitions(List<Node> positiveNodes,
+                               List<Node> negativeNodes,
+                               int[] positiveIndices,
+                               int[] negativeIndices,
+                               Graph result) {
+        int k = 0;
+
+        for (int i : positiveIndices) {
+            if (k < i) {
+                k = i;
+            }
+        }
+
+        ++k;
+
+        // Here, k is the amount of groups.
+
+        List<Node>[] positiveGroups = new List[k];
+        List<Node>[] negativeGroups = new List[k];
+
+        int i = 0;
+
+        for (int index : positiveIndices) {
+            if (positiveGroups[index] == null) {
+                positiveGroups[index] =
+                        new ArrayList<Node>(positiveNodes.size());
+            }
+
+            positiveGroups[index].add(positiveNodes.get(i++));
+        }
+
+        i = 0;
+
+        for (int index : negativeIndices) {
+            if (negativeGroups[index] == null) {
+                negativeGroups[index] =
+                        new ArrayList<Node>(negativeNodes.size());
+            }
+
+            negativeGroups[index].add(negativeNodes.get(i++));
+        }
+
+        for (i = 0; i < k; ++i) {
+            checkGroup(positiveGroups[i], negativeGroups[i]);
+            linkGroup(positiveGroups[i], negativeGroups[i], result);
         }
     }
 }
