@@ -1,6 +1,7 @@
 package net.coderodde.loan.model.support;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import net.coderodde.loan.model.Graph;
 import net.coderodde.loan.model.Node;
+import static net.coderodde.loan.model.support.Utils.nodeListEquityComparator;
 
 /**
  * This class contains the utility methods for simplifying graphs.
@@ -417,6 +419,18 @@ public class Utils {
         return list;
     }
 
+    final static NodeListEquityComparator nodeListEquityComparator =
+             new NodeListEquityComparator();
+
+    static class NodeListEquityComparator implements Comparator<List<Node>> {
+        @Override
+        public int compare(List<Node> l1, List<Node> l2) {
+            long e1 = sumNodeEquities(l1);
+            long e2 = sumNodeEquities(l2);
+            return (e1 < e2 ? -1 : (e1 > e2 ? 1 : 0));
+        }
+    }
+
     final static GroupOrderComparator groupOrderComparator =
              new GroupOrderComparator();
 
@@ -495,6 +509,9 @@ public class Utils {
             negativeMap[index].add(negativeNodeList.get(i++));
         }
 
+        Arrays.sort(positiveMap, nodeListEquityComparator);
+        Arrays.sort(negativeMap, nodeListEquityComparator);
+
         for (i = 0; i < k; ++i) {
             if (sumNodeEquities(positiveMap[i])
                     != sumNodeEquities(negativeMap[i])) {
@@ -546,6 +563,9 @@ public class Utils {
 
             negativeGroups[index].add(negativeNodes.get(i++));
         }
+
+        Arrays.sort(positiveGroups, nodeListEquityComparator);
+        Arrays.sort(negativeGroups, nodeListEquityComparator);
 
         for (i = 0; i < k; ++i) {
             checkGroup(positiveGroups[i], negativeGroups[i]);

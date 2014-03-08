@@ -22,7 +22,7 @@ public class Demo {
         title("Profiling the simplification algorithms");
 
         final long SEED = System.currentTimeMillis();
-        final int N = 10;
+        final int N = 12;
         final Random r = new Random(SEED);
 
         System.out.println("Seed: " + SEED);
