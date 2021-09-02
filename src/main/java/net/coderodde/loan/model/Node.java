@@ -8,8 +8,9 @@ import java.util.NoSuchElementException;
 /**
  * This class implements a loan graph node.
  *
- * @author coderodde
- * @version 1.6
+ * @author Rodion "coderodde" Efremov
+ * @version 1.61 (Sep 2, 2021)
+ * @since 1.6
  */
 public class Node implements Iterable<Node> {
     
@@ -23,12 +24,12 @@ public class Node implements Iterable<Node> {
     /**
      * This is the map from lender to loan amount.
      */
-    private final Map<Node, Long> in;
+    private final Map<Node, Long> in = new HashMap<>();
     
     /**
      * This is the map from borrower to resources lent.
      */
-    private final Map<Node, Long> out;
+    private final Map<Node, Long> out = new HashMap<>();
     
     /**
      * The graph owning this node, if any.
@@ -48,10 +49,8 @@ public class Node implements Iterable<Node> {
      */
     public Node(final String name) {
         this.name = name;
-        this.in = new HashMap<Node, Long>();
-        this.out = new HashMap<Node, Long>();
     }
-
+    
     /**
      * Copy-constructs a node.
      * 
@@ -71,33 +70,78 @@ public class Node implements Iterable<Node> {
     }
 
     /**
-     * Connects this node to a borrower with the specified amount.
+     * Returns the number of borrowers.
+     * 
+     * @return the number of borrowers.
+     */
+    public int getNumberOfBorrowers() {
+        return this.out.size();
+    }
+
+    /**
+     * Returns the number of lenders.
+     * 
+     * @return the number of lenders. 
+     */
+    public int getNumberOfLenders() {
+        return this.in.size();
+    }
+
+    /**
+     * Returns the weight of the directed arc {@code (this, borrower)}.
+     * 
+     * @param borrower the head node of the arc.
+     * @return the arc weight.
+     */
+    public long getWeightTo(Node borrower) {
+        checkBorrowerNotNull(borrower);
+        checkBorrowerBelongsToThisGraph(borrower);
+        checkBorrowerExists(borrower);
+        return this.out.get(borrower);
+    }
+    
+    /**
+     * Sets the weight of the directed arc {@code (this, borrower)}.
+     * 
+     * @param borrower the head node of the arc.
+     * @param weight the arc weight.
+     */
+    public void setWeightTo(Node borrower, long weight) {
+        checkBorrowerNotNull(borrower);
+        checkBorrowerExists(borrower);
+        this.out.put(borrower, weight);
+        borrower.in.put(this, weight);
+    }
+
+    /**
+     * Connects this node to a borrower.
      * 
      * @param borrower the borrower.
-     * @param amount the amount of loan.
      */
-    public void connectTo(final Node borrower, final long amount) {
-        checkAmount(amount);
-        checkBorrower(borrower);
+    public void connectToBorrower(final Node borrower) {
+        checkBorrowerNotNull(borrower);
 
         if (out.containsKey(borrower)) {
-            out.put(borrower, out.get(borrower) + amount);
-            borrower.in.put(this, borrower.in.get(this) + amount);
-        } else {
-            out.put(borrower, amount);
-            borrower.in.put(this, amount);
-
-            if (ownerGraph != null) {
-                ownerGraph.edgeAmount++;
-            }
+            return;
         }
-
-        if (ownerGraph != null) {
-            ownerGraph.flow += amount;
-        }
-
-        equity += amount;
-        borrower.equity -= amount;
+        
+        if (borrower.ownerGraph != this.ownerGraph) {
+            borrower.ownerGraph = this.ownerGraph;
+            borrower.clear();
+        } 
+        
+        out.put(borrower, 0L);
+        borrower.in.put(this, 0L);
+    }
+    
+    public void addWeightTo(final Node borrower, final long weightDelta) {
+        checkBorrowerNotNull(borrower);
+        checkBorrowerBelongsToThisGraph(borrower);
+        checkBorrowereIsConnected(borrower);
+        checkWeightDelta(borrower, weightDelta);
+        this.equity += weightDelta;
+        borrower.equity -= weightDelta;
+        setWeightTo(borrower, getWeightTo(borrower) + weightDelta);
     }
     
     /**
@@ -106,17 +150,20 @@ public class Node implements Iterable<Node> {
      * @param borrower the borrower to remove.
      */
     public void removeBorrower(final Node borrower) {
+        checkBorrowerNotNull(borrower);
+        
+        if (borrower.ownerGraph != this.ownerGraph) {
+            return;
+        }
+        
         if (out.containsKey(borrower)) {
             long w = out.get(borrower);
             out.remove(borrower);
             borrower.in.remove(this);
             this.equity -= w;
             borrower.equity += w;
-
-            if (ownerGraph != null) {
-                ownerGraph.edgeAmount--;
-                ownerGraph.flow -= w;
-            }
+            ownerGraph.edgeAmount--;
+            ownerGraph.flow -= w;
         }
     }
 
@@ -138,43 +185,31 @@ public class Node implements Iterable<Node> {
             iterator.remove();
         }
     }
-
-    /**
-     * Returns the amount of borrowers.
-     * 
-     * @return the amount of borrowers.
-     */
-    public int getBorrowerAmount() {
-        return this.out.size();
+    
+    public boolean isOrphan() {
+        return ownerGraph == null;
     }
-
-    /**
-     * Returns the amount of lenders.
-     * 
-     * @return the amount of lenders. 
-     */
-    public int getLenderAmount() {
-        return this.in.size();
-    }
-
-    /**
-     * Retrieves the loan amount to borrower.
-     * 
-     * @param borrower the borrower to query.
-     * @return the amount of resources lent to borrower.
-     */
-    public long getLoanTo(final Node borrower) {
-        if (out.containsKey(borrower) == false) {
-            return 0L;
+    
+    private void checkBorrowerBelongsToThisGraph(final Node borrower) {
+        if (borrower.ownerGraph != this.ownerGraph) {
+            throw new IllegalStateException("The input borrower node " +
+                    borrower + " does not belong to this graph.");
         }
-
-        return out.get(borrower);
+    }
+    
+    private void checkBorrowereIsConnected(final Node borrower) {
+        
+        if (!out.containsKey(borrower)) {
+            throw new IllegalStateException("The input borrower " + borrower + 
+                    " is not connected to this node.");
+        }
     }
 
     /**
      * Returns the string representation of this node.
      * @return 
      */
+    @Override
     public String toString() {
         return "[Node " + name + "; equity: " + getEquity() + " ]";
     }
@@ -232,29 +267,13 @@ public class Node implements Iterable<Node> {
     }
 
     /**
-     * Checks whether the amount is positive.
-     * 
-     * @param amount the amount to check. 
-     */
-    private void checkAmount(final long amount) {
-        if (amount <= 0) {
-            throw new IllegalArgumentException(
-                    "Illegal amount given: " + amount);
-        }
-    }
-
-    /**
      * Checks that borrower is not null and not this.
      * 
      * @param borrower the borrower to check. 
      */
-    private void checkBorrower(final Node borrower) {
+    private void checkBorrowerNotNull(final Node borrower) {
         if (borrower == null) {
             throw new NullPointerException("Borrower is null.");
-        }
-
-        if (borrower == this) {
-            throw new IllegalArgumentException("Requesting a self-loop.");
         }
     }
 
@@ -305,15 +324,14 @@ public class Node implements Iterable<Node> {
                         "There is no current element to remove.");
             }
 
-            long w = Node.this.getLoanTo(lastReturned);
-
+            final long weight = Node.this.getWeightTo(lastReturned);
             iterator.remove();
             lastReturned.in.remove(Node.this);
             lastReturned = null;
 
             if (ownerGraph != null) {
                 ownerGraph.edgeAmount--;
-                ownerGraph.flow -= w;
+                ownerGraph.flow -= weight;
             }
         }
     }
@@ -383,7 +401,7 @@ public class Node implements Iterable<Node> {
                         "There is no current element to remove.");
             }
 
-            long w = lastReturned.getLoanTo(Node.this);
+            final long weight = lastReturned.getWeightTo(Node.this);
             
             iterator.remove();
             lastReturned.out.remove(Node.this);
@@ -391,8 +409,24 @@ public class Node implements Iterable<Node> {
 
             if (ownerGraph != null) {
                 ownerGraph.edgeAmount--;
-                ownerGraph.flow -= w;
+                ownerGraph.flow -= weight;
             }
+        }
+    }
+    
+    private void checkBorrowerExists(Node borrower) {
+        if (!out.containsKey(borrower)) {
+            throw new IllegalArgumentException(
+                    "No arc (" + this + ", " + borrower + ").");
+        }
+    }
+    
+    private void checkWeightDelta(final Node borrower, final long weightDelta) {
+        if (out.get(borrower) + weightDelta < 0L) {
+            throw new IllegalArgumentException(
+                    "The weight delta (" + weightDelta + 
+                            ") exceeds the arc weight (" + 
+                            out.get(borrower) + ").");
         }
     }
 }

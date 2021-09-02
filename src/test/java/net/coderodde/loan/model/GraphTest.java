@@ -38,7 +38,7 @@ public class GraphTest {
         g.add(v);
         assertEquals(2, g.size());
         assertEquals(0, g.getEdgeAmount());
-        u.connectTo(v, 10L);
+        u.connectToBorrower(v, 10L);
         assertEquals(2, g.size());
         assertEquals(1, g.getEdgeAmount());
         assertEquals(10L, g.getTotalFlow());
@@ -83,7 +83,7 @@ public class GraphTest {
         assertEquals(0, g.getTotalFlow());
         g.add(u);
         g.add(v);
-        u.connectTo(v, 10L);
+        u.connectToBorrower(v, 10L);
         assertEquals(2, g.size());
         assertEquals(1, g.getEdgeAmount());
         assertEquals(10L, g.getTotalFlow());
@@ -113,14 +113,14 @@ public class GraphTest {
 
         clone.add(w);
 
-        clone.get(u.getName()).connectTo(clone.get(v.getName()), 2L);
-        clone.get(v.getName()).connectTo(clone.get(w.getName()), 3L);
-        clone.get(w.getName()).connectTo(clone.get(u.getName()), 4L);
+        clone.get(u.getName()).connectToBorrower(clone.get(v.getName()), 2L);
+        clone.get(v.getName()).connectToBorrower(clone.get(w.getName()), 3L);
+        clone.get(w.getName()).connectToBorrower(clone.get(u.getName()), 4L);
 
         assertEquals(3, clone.getEdgeAmount());
         assertEquals(9L, clone.getTotalFlow());
 
-        clone.get(w.getName()).connectTo(clone.get(v.getName()), 1L);
+        clone.get(w.getName()).connectToBorrower(clone.get(v.getName()), 1L);
 
         assertEquals(4, clone.getEdgeAmount());
         assertEquals(10L, clone.getTotalFlow());
@@ -128,8 +128,8 @@ public class GraphTest {
         Graph c = new Graph(clone);
 
         assertEquals(3, c.size());
-        assertEquals(0, c.getEdgeAmount());
-        assertEquals(0L, c.getTotalFlow());
+        assertEquals(4, c.getEdgeAmount());
+        assertEquals(10L, c.getTotalFlow());
     }
 
     @Test
@@ -138,12 +138,12 @@ public class GraphTest {
         g.add(v);
         g.add(w);
 
-        u.connectTo(v, 2L);
-        v.connectTo(w, 3L);
+        u.connectToBorrower(v, 2L);
+        v.connectToBorrower(w, 3L);
 
         assertEquals(g.getEdgeAmount(), 2);
 
-        w.connectTo(u, 5L);
+        w.connectToBorrower(u, 5L);
 
         assertEquals(g.getEdgeAmount(), 3);
 
@@ -158,16 +158,16 @@ public class GraphTest {
         g.add(v);
         g.add(w);
 
-        u.connectTo(v, 2L);
+        u.connectToBorrower(v, 2L);
 
         assertEquals(g.getTotalFlow(), 2L);
 
-        v.connectTo(w, 3L);
+        v.connectToBorrower(w, 3L);
 
         assertEquals(g.getTotalFlow(), 5L);
         assertEquals(g.getEdgeAmount(), 2);
 
-        w.connectTo(u, 5L);
+        w.connectToBorrower(u, 5L);
 
         assertEquals(g.getTotalFlow(), 10L);
         assertEquals(g.getEdgeAmount(), 3);
@@ -270,21 +270,21 @@ public class GraphTest {
 
         assertTrue(g.isEquivalentTo(c));
 
-        g.get(0).connectTo(g.get(1), 4L);
+        g.get(0).connectToBorrower(g.get(1), 4L);
 
         assertFalse(g.isEquivalentTo(c));
 
-        c.get(0).connectTo(c.get(1), 4L);
+        c.get(0).connectToBorrower(c.get(1), 4L);
 
         assertTrue(g.isEquivalentTo(c));
 
-        c.get(1).connectTo(c.get(0), 3L);
+        c.get(1).connectToBorrower(c.get(0), 3L);
 
         assertFalse(g.isEquivalentTo(c));
 
         g.get(0).removeBorrower(g.get(1));
 
-        g.get(0).connectTo(g.get(1), 1L);
+        g.get(0).connectToBorrower(g.get(1), 1L);
 
         assertTrue(g.isEquivalentTo(c));
     }

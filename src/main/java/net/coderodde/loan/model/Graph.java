@@ -1,6 +1,7 @@
 package net.coderodde.loan.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,12 +19,12 @@ public class Graph implements Iterable<Node> {
     /**
      * This map maps name of the nodes to respective node objects.
      */
-    private Map<String, Node> nodeMap;
+    private Map<String, Node> nodeMap = new HashMap<>();
 
     /**
      * This list contains all the nodes currently stored in this graph.
      */
-    private List<Node> nodeList;
+    private List<Node> nodeList = new ArrayList<>();
 
     /**
      * This variable caches the amount of edges in this graph.
@@ -39,23 +40,41 @@ public class Graph implements Iterable<Node> {
     /**
      * Constructs an empty graph.
      */
-    public Graph() {
-        nodeMap = new LinkedHashMap<String, Node>();
-        nodeList = new ArrayList<Node>();
-    }
+    public Graph() {}
 
     /**
      * Constructs a graph with the same amount of nodes as in
-     * <code>copy</code> with the same node names. Edges are not copied.
+     * <code>copy</code> with the same node names. Edges are copied as well,
+     * and their respective arc weights are set correspondingly.
      *
      * @param copy the graph to copy.
      */
     public Graph(Graph copy) {
-        this();
-
-        for (Node node : copy) {
-            add(new Node(node));
+        final Map<Node, Node> map = new HashMap<>(nodeList.size());
+        
+        for (final Node node : copy) {
+            final Node newNode = new Node(node);
+            map.put(node, newNode);
+            add(newNode);
         }
+        
+        for (final Node node : copy) {
+            final Node tail = map.get(node);
+            
+            for (final Node borrower : node) {
+                final Node head = map.get(borrower);
+                tail.connectToBorrower(borrower);
+                tail.setWeightTo(borrower, node.getWeightTo(borrower));
+            }
+        }
+        
+        this.edgeAmount = copy.edgeAmount;
+    }
+    
+    @Override
+    public String toString() {
+        return "[" + nodeList.size() + " nodes, " + edgeAmount + " edges, " + 
+               flow + " flow]";
     }
 
     /**
@@ -67,7 +86,7 @@ public class Graph implements Iterable<Node> {
         if (nodeMap.containsKey(node.getName())) {
             return;
         }
-
+        
         node.clear();
         node.ownerGraph = this;
         nodeMap.put(node.getName(), node);
@@ -178,7 +197,7 @@ public class Graph implements Iterable<Node> {
 
         return true;
     }
-
+    
     /**
      * This class implements the iterators over this graph's nodes.
      */

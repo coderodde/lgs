@@ -38,7 +38,7 @@ public class NodeTest {
         assertEquals(0L, u.getEquity());
         assertEquals(0L, v.getEquity());
 
-        u.connectTo(v, 3L);
+        u.connectToBorrower(v, 3L);
 
         assertEquals(3L, u.getEquity());
         assertEquals(-3L, v.getEquity());
@@ -56,30 +56,30 @@ public class NodeTest {
 
     @Test
     public void testGetBorrowerAmount() {
-        assertEquals(0, u.getBorrowerAmount());
-        u.connectTo(v, 3L);
-        assertEquals(1, u.getBorrowerAmount());
-        u.connectTo(w, 2L);
-        assertEquals(2, u.getBorrowerAmount());
+        assertEquals(0, u.getNumberOfBorrowers());
+        u.connectToBorrower(v, 3L);
+        assertEquals(1, u.getNumberOfBorrowers());
+        u.connectToBorrower(w, 2L);
+        assertEquals(2, u.getNumberOfBorrowers());
     }
 
     @Test
     public void testGetLoanTo() {
-        assertEquals(0L, u.getLoanTo(v));
+        assertEquals(0L, u.getArcWeight(v));
 
-        u.connectTo(v, 2L);
-        u.connectTo(w, 1L);
+        u.connectToBorrower(v, 2L);
+        u.connectToBorrower(w, 1L);
 
-        assertEquals(2L, u.getLoanTo(v));
-        assertEquals(1L, u.getLoanTo(w));
+        assertEquals(2L, u.getArcWeight(v));
+        assertEquals(1L, u.getArcWeight(w));
     }
 
     @Test
     public void testToString() {
         assertEquals("[Node A; equity: 0 ]", u.toString());
-        u.connectTo(v, 7L);
-        u.connectTo(w, 4L);
-        v.connectTo(u, 1L);
+        u.connectToBorrower(v, 7L);
+        u.connectToBorrower(w, 4L);
+        v.connectToBorrower(u, 1L);
         assertEquals("[Node A; equity: 10 ]", u.toString());
     }
 
@@ -87,8 +87,8 @@ public class NodeTest {
     public void testHashCode() {
         Node other = new Node("A");
         assertTrue(other.hashCode() == u.hashCode());
-        other.connectTo(v, 3L);
-        u.connectTo(w, 5L);
+        other.connectToBorrower(v, 3L);
+        u.connectToBorrower(w, 5L);
         assertTrue(other.hashCode() == u.hashCode());
     }
 
@@ -112,7 +112,7 @@ public class NodeTest {
         assertEquals(0, count);
 
         count = 0;
-        u.connectTo(v, 5L);
+        u.connectToBorrower(v, 5L);
 
         for (Node n : u) {
             assertTrue(n == v);
@@ -123,7 +123,7 @@ public class NodeTest {
 
         count = 0;
 
-        u.connectTo(w, 4L);
+        u.connectToBorrower(w, 4L);
 
         for (Node n : u) {
             count++;
@@ -135,24 +135,24 @@ public class NodeTest {
     @Test
     public void testGetEquity() {
         assertEquals(u.getEquity(), 0L);
-        u.connectTo(v, 4L);
+        u.connectToBorrower(v, 4L);
         assertEquals(u.getEquity(), 4L);
-        u.connectTo(w, 3L);
+        u.connectToBorrower(w, 3L);
         assertEquals(u.getEquity(), 7L);
-        v.connectTo(u, 5L);
+        v.connectToBorrower(u, 5L);
         assertEquals(u.getEquity(), 2L);
-        w.connectTo(u, 9L);
+        w.connectToBorrower(u, 9L);
         assertEquals(u.getEquity(), -7L);
     }
 
     @Test
     public void testIterators() {
-        u.connectTo(v, 4L);
-        u.connectTo(w, 5L);
-        v.connectTo(u, 3L);
-        v.connectTo(w, 1L);
-        w.connectTo(u, 3L);
-        w.connectTo(v, 7L);
+        u.connectToBorrower(v, 4L);
+        u.connectToBorrower(w, 5L);
+        v.connectToBorrower(u, 3L);
+        v.connectToBorrower(w, 1L);
+        w.connectToBorrower(u, 3L);
+        w.connectToBorrower(v, 7L);
         
         List<Node> nodes = new ArrayList<Node>();
         
@@ -188,8 +188,8 @@ public class NodeTest {
         }
         
         assertEquals(2, i);
-        assertEquals(1, u.getBorrowerAmount());
-        assertEquals(2, u.getLenderAmount());
+        assertEquals(1, u.getNumberOfBorrowers());
+        assertEquals(2, u.getNumberOfLenders());
         
         iter = u.parentIterable().iterator();
         i = 0;
@@ -205,7 +205,7 @@ public class NodeTest {
         }
         
         assertEquals(2, i);
-        assertEquals(1, u.getBorrowerAmount());
-        assertEquals(1, u.getLenderAmount());
+        assertEquals(1, u.getNumberOfBorrowers());
+        assertEquals(1, u.getNumberOfLenders());
     }
 }

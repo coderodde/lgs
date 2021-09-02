@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import net.coderodde.loan.model.Graph;
@@ -149,9 +148,14 @@ public class Utils {
             } else if (positiveEquityArray[pi] < negativeEquityArray[ni]) {
                 --ni;
             } else {
-                graph.get(positiveNodeList.get(pi).getName())
-                     .connectTo(graph.get(negativeNodeList.get(ni).getName()),
-                     positiveEquityArray[pi]);
+                
+                final Node nodeP = 
+                        graph.get(positiveNodeList.get(pi).getName());
+                
+                final Node nodeN =
+                        graph.get(negativeNodeList.get(ni).getName());
+                
+                nodeP.addWeightTo(nodeN, positiveEquityArray[pi]);
                 positiveNodeList.remove(pi--);
                 negativeNodeList.remove(ni--);
                 resolved++;
@@ -226,15 +230,16 @@ public class Utils {
             ++edgeAmount;
 
             if (positiveEquityArray[pi] > negativeEquityArray[ni]) {
-                positiveNodeList.get(pi).connectTo(negativeNodeList.get(ni),
+                positi
+                positiveNodeList.get(pi).connectToBorrower(negativeNodeList.get(ni),
                                                    negativeEquityArray[ni]);
                 positiveEquityArray[pi] -= negativeEquityArray[ni++];
             } else if (positiveEquityArray[pi] < negativeEquityArray[ni]) {
-                positiveNodeList.get(pi).connectTo(negativeNodeList.get(ni),
+                positiveNodeList.get(pi).connectToBorrower(negativeNodeList.get(ni),
                                                    positiveEquityArray[pi]);
                 negativeEquityArray[ni] -= positiveEquityArray[pi++];
             } else {
-                positiveNodeList.get(pi).connectTo(negativeNodeList.get(ni),
+                positiveNodeList.get(pi).connectToBorrower(negativeNodeList.get(ni),
                                                    positiveEquityArray[pi]);
                 ++pi;
                 ++ni;

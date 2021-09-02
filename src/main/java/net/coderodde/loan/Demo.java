@@ -4,6 +4,7 @@ import java.util.Random;
 import net.coderodde.loan.model.Algorithm;
 import net.coderodde.loan.model.Graph;
 import net.coderodde.loan.model.Node;
+import net.coderodde.loan.model.support.CyclePurgeBypassSimplifier;
 import net.coderodde.loan.model.support.ExactCombinatorialSimplifier;
 import net.coderodde.loan.model.support.FasterExactCombinatorialSimplifier;
 import net.coderodde.loan.model.support.GreedyCombinatorialSimplifier;
@@ -22,7 +23,7 @@ public class Demo {
         title("Profiling the simplification algorithms");
 
         final long SEED = System.currentTimeMillis();
-        final int N = 12;
+        final int N = 13;
         final Random r = new Random(SEED);
 
         System.out.println("Seed: " + SEED);
@@ -37,8 +38,9 @@ public class Demo {
 
         profile(new LinearSimplifier(), input);
         profile(new GreedyCombinatorialSimplifier(), input);
-        profile(new FasterExactCombinatorialSimplifier(), input);
-        profile(new ExactCombinatorialSimplifier(), input);
+        profile(new CyclePurgeBypassSimplifier(), input);
+//        profile(new FasterExactCombinatorialSimplifier(), input);
+//        profile(new ExactCombinatorialSimplifier(), input);
         profile(new PartitionalSimplifier(), input);
 
         bar();
@@ -73,9 +75,11 @@ public class Demo {
             for (int j = 0; j < size; ++j) {
                 if (i != j) {
                     if (r.nextFloat() < loadFactor) {
-                        ret.get(i)
-                           .connectTo(ret.get(j),
-                                      Math.abs(r.nextLong()) % maxLoan + 1L);
+                        final long weight = 
+                                Math.abs(r.nextLong()) % maxLoan + 1L;
+                        
+                        ret.get(i).connectToBorrower(ret.get(j));
+                        ret.get(i).setWeightTo(ret.get(j), weight);
                     }
                 }
             }
