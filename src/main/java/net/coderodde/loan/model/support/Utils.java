@@ -149,13 +149,13 @@ public class Utils {
                 --ni;
             } else {
                 
-                final Node nodeP = 
-                        graph.get(positiveNodeList.get(pi).getName());
+                Node nodeP = graph.get(positiveNodeList.get(pi).getName());
+                Node nodeN = graph.get(negativeNodeList.get(ni).getName());
                 
-                final Node nodeN =
-                        graph.get(negativeNodeList.get(ni).getName());
+                nodeP.setWeightTo(
+                        nodeN, 
+                        nodeP.getWeightTo(nodeN) + positiveEquityArray[pi]);
                 
-                nodeP.addWeightTo(nodeN, positiveEquityArray[pi]);
                 positiveNodeList.remove(pi--);
                 negativeNodeList.remove(ni--);
                 resolved++;

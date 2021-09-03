@@ -33,13 +33,15 @@ public class CyclePurgeBypassSimplifierTest {
         
         Graph result = new CyclePurgeBypassSimplifier().simplify(g);
         
-        System.out.println("DDDDD " + result);
-        
         assertEquals(3, result.size());
         assertEquals(2, result.getEdgeAmount());
+
+        assertEquals(1L, result.get(0).getWeightTo(result.get(1)));
+        assertEquals(1L, result.get(0).getWeightTo(result.get(2)));
         
-        assertEquals(1L, a.getWeightTo(c));
-        assertEquals(1L, b.getWeightTo(c));
+        assertEquals(2L,  result.get(0).getEquity());
+        assertEquals(-1L, result.get(1).getEquity());
+        assertEquals(-1L, result.get(2).getEquity());
         
         assertEquals(2L, result.getTotalFlow());
     }

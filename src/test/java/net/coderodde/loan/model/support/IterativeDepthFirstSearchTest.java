@@ -11,13 +11,19 @@ public class IterativeDepthFirstSearchTest {
     private final IterativeDepthFirstSearch dfs = 
               new IterativeDepthFirstSearch();
     
-    @Test(expected = IllegalArgumentException.class)
     public void findCyclesTrhowsOnSingleNodeSelfLoop() {
         Graph g = new Graph();
         Node nodeA = new Node("A");
         g.add(nodeA);
         nodeA.connectToBorrower(nodeA);
         nodeA.setWeightTo(nodeA, 2L);
+        List<Node> cycle = dfs.findCycle(g);
+        
+        assertEquals(1, cycle.size());
+        assertEquals(nodeA, cycle.get(0));
+        assertEquals(2L, nodeA.getEquity());
+        assertEquals(1, g.size());
+        assertEquals(1, g.getEdgeAmount());
     }
     
     @Test

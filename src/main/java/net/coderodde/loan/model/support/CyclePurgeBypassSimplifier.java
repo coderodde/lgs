@@ -42,7 +42,9 @@ public final class CyclePurgeBypassSimplifier implements Algorithm {
         Triple<Node, Node, Node> arcChainToBypass;
         
         while ((arcChainToBypass = findArcChain(resultGraph)) != null) {
-            resolveArcChain(arcChainToBypass);
+            resolveArcChain(arcChainToBypass.first,
+                            arcChainToBypass.second,
+                            arcChainToBypass.third);
         }
 
         return resultGraph;
@@ -51,58 +53,39 @@ public final class CyclePurgeBypassSimplifier implements Algorithm {
     private static void resolveCycle(List<Node> cycle) {
         long minimumWeight = Long.MAX_VALUE;
         
-        for (int i = 0; i < cycle.size() - 1; i++) {
-            final Node lender = cycle.get(i);
-            final Node borrower = cycle.get(i + 1);
-            final long arcWeight = lender.getWeightTo(borrower);
-            
-            if (minimumWeight > arcWeight) {
-                minimumWeight = arcWeight;
-            }
+        for (int i = 0; i < cycle.size(); i++) {
+            Node lender = cycle.get(i);
+            Node borrower = cycle.get((i + 1) % cycle.size());
+            long arcWeight = lender.getWeightTo(borrower);
+            minimumWeight = Math.min(minimumWeight, arcWeight);
         }
         
-        minimumWeight = 
-                Math.min(
-                        minimumWeight, 
-                        cycle.get(cycle.size() - 1)
-                             .getWeightTo(cycle.get(0)));
-        
-        for (int i = 0; i < cycle.size() - 1; i++) {
+        for (int i = 0; i < cycle.size(); i++) {
             final Node lender = cycle.get(i);
-            final Node borrower = cycle.get(i + 1);
+            final Node borrower = cycle.get((i + 1) % cycle.size());
             final long arcWeight = lender.getWeightTo(borrower);
             
             if (arcWeight == minimumWeight) {
+                // Remove the minimum weight arc:
                 lender.removeBorrower(borrower);
             } else {
                 // Subtract 'minimumWeight' from the '(lender, borrower)' arc
                 // weight:
-                lender.addWeightTo(borrower, -minimumWeight);
+                lender.setWeightTo(borrower, 
+                        lender.getWeightTo(borrower) - minimumWeight);
             }
-        }
-        
-        // Deal with the last arc in the cycle pointing to the root of the 
-        // cycle:
-        final Node lender = cycle.get(cycle.size() - 1);
-        final Node borrower = cycle.get(0);
-        final long arcWeight = lender.getWeightTo(borrower);
-        
-        if (arcWeight == minimumWeight) {
-            lender.removeBorrower(borrower);
-        } else {
-            lender.addWeightTo(borrower, -minimumWeight);
         }
     }
     
     private static Triple<Node, Node, Node> findArcChain(Graph graph) {
         for (Node root : graph) {
-            return tryFindArcChain(root);
+            return findArcChainImpl(root);
         }
         
         return null;
     }
     
-    private static Triple<Node, Node, Node> tryFindArcChain(Node root) {
+    private static Triple<Node, Node, Node> findArcChainImpl(Node root) {
         for (Node child : root) {
             for (Node grandChild : child) {
                 return new Triple<>(root, child, grandChild);
@@ -112,25 +95,27 @@ public final class CyclePurgeBypassSimplifier implements Algorithm {
         return null;
     }
     
-    private static void resolveArcChain(Triple<Node, Node, Node> arcChain) {
-        final Node n1 = arcChain.first;
-        final Node n2 = arcChain.second;
-        final Node n3 = arcChain.third;
+    private static void resolveArcChain(Node n1, Node n2, Node n3) {
+        long weightN1N2 = n1.getWeightTo(n2);
+        long weightN2N3 = n2.getWeightTo(n3);
+        long minimumWeight = Math.min(weightN1N2, weightN2N3);
         
-        final long weightN1N2 = n1.getWeightTo(n2);
-        final long weightN2N3 = n2.getWeightTo(n3);
-        final long minimumWeight = Math.min(weightN1N2, weightN2N3);
-        
-        n1.addWeightTo(n2, -minimumWeight);
+        n1.setWeightTo(n2, n1.getWeightTo(n2) - minimumWeight);
+        n2.setWeightTo(n3, n2.getWeightTo(n3) - minimumWeight);
         
         if (n1.getWeightTo(n2) == 0L) {
             n1.removeBorrower(n2);
         }
         
-        n2.addWeightTo(n3, -minimumWeight);
-        
         if (n2.getWeightTo(n3) == 0L) {
             n2.removeBorrower(n3);
+        }
+        
+        if (n1.isConnectedTo(n3)) {
+            n1.setWeightTo(n3, n1.getWeightTo(n3) + minimumWeight);
+        } else {
+            n1.connectToBorrower(n3);
+            n1.setWeightTo(n3, minimumWeight);
         }
     }
 }

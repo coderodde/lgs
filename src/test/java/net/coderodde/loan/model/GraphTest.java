@@ -346,4 +346,17 @@ public class GraphTest {
         assertEquals(-5L, v.getEquity());
         assertEquals(-2L, w.getEquity());
     }
+    
+    @Test
+    public void equity() {
+        g.add(u);
+        g.add(v);
+        
+        u.connectToBorrower(v);
+        u.setWeightTo(v, 100L);
+        u.setWeightTo(v, 50L);
+        
+        assertEquals(50L, u.getWeightTo(v));
+        assertEquals(50L, g.getTotalFlow());
+    }
 }

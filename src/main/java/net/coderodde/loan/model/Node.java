@@ -110,12 +110,16 @@ public class Node implements Iterable<Node> {
         checkBorrowerNotNull(borrower);
         checkBorrowerBelongsToThisGraph(borrower);
         checkBorrowerExists(borrower);
+        
         long oldWeight = this.out.get(borrower);
+        
         this.out.put(borrower, weight);
         borrower.in.put(this, weight);
-        ownerGraph.flow += weight;
-        equity += (weight - oldWeight);
-        borrower.equity -= (weight - oldWeight);
+        //            50 = 100 - 50
+        long weightDelta = weight - oldWeight;
+        ownerGraph.flow += weightDelta;
+        equity += weightDelta;
+        borrower.equity -= weight;
     }
 
     /**
@@ -141,14 +145,8 @@ public class Node implements Iterable<Node> {
         ownerGraph.edgeAmount++;
     }
     
-    public void addWeightTo(final Node borrower, final long weightDelta) {
-        checkBorrowerNotNull(borrower);
-        checkBorrowerBelongsToThisGraph(borrower);
-        checkBorrowereIsConnected(borrower);
-        checkWeightDelta(borrower, weightDelta);
-        this.equity += weightDelta;
-        borrower.equity -= weightDelta;
-        setWeightTo(borrower, getWeightTo(borrower) + weightDelta);
+    public boolean isConnectedTo(Node borrower) {
+        return out.containsKey(borrower);
     }
     
     /**
@@ -201,14 +199,6 @@ public class Node implements Iterable<Node> {
         if (borrower.ownerGraph != this.ownerGraph) {
             throw new IllegalStateException("The input borrower node " +
                     borrower + " does not belong to this graph.");
-        }
-    }
-    
-    private void checkBorrowereIsConnected(final Node borrower) {
-        
-        if (!out.containsKey(borrower)) {
-            throw new IllegalStateException("The input borrower " + borrower + 
-                    " is not connected to this node.");
         }
     }
 
