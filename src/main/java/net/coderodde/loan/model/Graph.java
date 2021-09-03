@@ -3,10 +3,10 @@ package net.coderodde.loan.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 /**
  * This class models a loan graph.
@@ -19,12 +19,12 @@ public class Graph implements Iterable<Node> {
     /**
      * This map maps name of the nodes to respective node objects.
      */
-    private Map<String, Node> nodeMap = new HashMap<>();
+    private final Map<String, Node> nodeMap = new HashMap<>();
 
     /**
      * This list contains all the nodes currently stored in this graph.
      */
-    private List<Node> nodeList = new ArrayList<>();
+    private final List<Node> nodeList = new ArrayList<>();
 
     /**
      * This variable caches the amount of edges in this graph.
@@ -50,21 +50,21 @@ public class Graph implements Iterable<Node> {
      * @param copy the graph to copy.
      */
     public Graph(Graph copy) {
-        final Map<Node, Node> map = new HashMap<>(nodeList.size());
+        Map<Node, Node> map = new HashMap<>(nodeList.size());
         
-        for (final Node node : copy) {
-            final Node newNode = new Node(node);
+        for (Node node : copy) {
+            Node newNode = new Node(node);
             map.put(node, newNode);
             add(newNode);
         }
         
-        for (final Node node : copy) {
-            final Node tail = map.get(node);
+        for (Node node : copy) {
+            Node tail = map.get(node);
             
-            for (final Node borrower : node) {
-                final Node head = map.get(borrower);
-                tail.connectToBorrower(borrower);
-                tail.setWeightTo(borrower, node.getWeightTo(borrower));
+            for (Node borrower : node) {
+                Node head = map.get(borrower);
+                tail.connectToBorrower(head);
+                tail.setWeightTo(head, node.getWeightTo(borrower));
             }
         }
         
@@ -83,7 +83,15 @@ public class Graph implements Iterable<Node> {
      * @param node the node to add.
      */
     public void add(Node node) {
+        Objects.requireNonNull(node, "The input node is null.");
+        
+        if (node.ownerGraph != this && node.ownerGraph != null) {
+            throw new IllegalArgumentException(
+                    "The input node belongs to some another graph.");
+        }
+        
         if (nodeMap.containsKey(node.getName())) {
+            // Already in this graph.
             return;
         }
         
@@ -101,6 +109,12 @@ public class Graph implements Iterable<Node> {
      * <code>false</code> otherwise.
      */
     public boolean contains(Node node) {
+        Objects.requireNonNull(node, "The input node is null.");
+        
+        if (node.ownerGraph != this) {
+            return false;
+        }
+       
         return nodeMap.containsKey(node.getName());
     }
 
@@ -131,12 +145,15 @@ public class Graph implements Iterable<Node> {
      * @param node the node to remove.
      */
     public void remove(Node node) {
+        if (node.ownerGraph != this) {
+            throw new IllegalArgumentException(
+                    "The input node does not belong to this graph.");
+        }
+        
         if (nodeMap.containsKey(node.getName())) {
             nodeMap.remove(node.getName());
             nodeList.remove(node);
-
             node.clear();
-
             node.ownerGraph = null;
         }
     }
@@ -251,6 +268,14 @@ public class Graph implements Iterable<Node> {
             nodeMap.remove(lastReturned.getName());
             lastReturned.clear();
             lastReturned = null;
+        }
+    }
+    
+    private void checkNodeBelongsToThisGraph(Node node) {
+        if (node.ownerGraph != this) {
+            throw new IllegalArgumentException(
+                    "The input node " + node + 
+                            " does not belong to this graph.");
         }
     }
 }

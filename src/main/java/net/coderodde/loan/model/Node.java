@@ -47,7 +47,7 @@ public class Node implements Iterable<Node> {
      * 
      * @param name the name of the new node.
      */
-    public Node(final String name) {
+    public Node(String name) {
         this.name = name;
     }
     
@@ -56,7 +56,7 @@ public class Node implements Iterable<Node> {
      * 
      * @param copy the node to share the identity with.
      */
-    public Node(final Node copy) {
+    public Node(Node copy) {
         this(copy.name);
     }
 
@@ -108,9 +108,14 @@ public class Node implements Iterable<Node> {
      */
     public void setWeightTo(Node borrower, long weight) {
         checkBorrowerNotNull(borrower);
+        checkBorrowerBelongsToThisGraph(borrower);
         checkBorrowerExists(borrower);
+        long oldWeight = this.out.get(borrower);
         this.out.put(borrower, weight);
         borrower.in.put(this, weight);
+        ownerGraph.flow += weight;
+        equity += (weight - oldWeight);
+        borrower.equity -= (weight - oldWeight);
     }
 
     /**
@@ -118,9 +123,10 @@ public class Node implements Iterable<Node> {
      * 
      * @param borrower the borrower.
      */
-    public void connectToBorrower(final Node borrower) {
+    public void connectToBorrower(Node borrower) {
         checkBorrowerNotNull(borrower);
-
+        checkBorrowerBelongsToThisGraph(borrower);
+        
         if (out.containsKey(borrower)) {
             return;
         }
@@ -132,6 +138,7 @@ public class Node implements Iterable<Node> {
         
         out.put(borrower, 0L);
         borrower.in.put(this, 0L);
+        ownerGraph.edgeAmount++;
     }
     
     public void addWeightTo(final Node borrower, final long weightDelta) {
@@ -211,7 +218,7 @@ public class Node implements Iterable<Node> {
      */
     @Override
     public String toString() {
-        return "[Node " + name + "; equity: " + getEquity() + " ]";
+        return "[Node " + name + "; equity: " + getEquity() + "]";
     }
 
     /**

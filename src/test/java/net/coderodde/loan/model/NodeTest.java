@@ -3,7 +3,6 @@ package net.coderodde.loan.model;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import net.coderodde.loan.model.Node;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -19,12 +18,14 @@ public class NodeTest {
     private Node u;
     private Node v;
     private Node w;
+    private Graph g;
 
     @Before
     public void before() {
         u = new Node("A");
         v = new Node("B");
         w = new Node("C");
+        g = new Graph();
     }
 
     @Test
@@ -35,11 +36,16 @@ public class NodeTest {
 
     @Test
     public void testConnectTo() {
+        g.add(u);
+        g.add(v);
+        g.add(w);
+        
         assertEquals(0L, u.getEquity());
         assertEquals(0L, v.getEquity());
 
-        u.connectToBorrower(v, 3L);
-
+        u.connectToBorrower(v);
+        u.setWeightTo(v, 3L);
+        
         assertEquals(3L, u.getEquity());
         assertEquals(-3L, v.getEquity());
 
@@ -56,40 +62,59 @@ public class NodeTest {
 
     @Test
     public void testGetBorrowerAmount() {
+        Graph g = new  Graph();
+        
+        g.add(u);
+        g.add(v);
+        g.add(w);
+        
         assertEquals(0, u.getNumberOfBorrowers());
-        u.connectToBorrower(v, 3L);
+        u.connectToBorrower(v);
         assertEquals(1, u.getNumberOfBorrowers());
-        u.connectToBorrower(w, 2L);
+        u.connectToBorrower(w);
         assertEquals(2, u.getNumberOfBorrowers());
     }
 
     @Test
     public void testGetLoanTo() {
-        assertEquals(0L, u.getArcWeight(v));
+        Graph g = new  Graph();
+        
+        g.add(u);
+        g.add(v);
+        g.add(w);
 
-        u.connectToBorrower(v, 2L);
-        u.connectToBorrower(w, 1L);
-
-        assertEquals(2L, u.getArcWeight(v));
-        assertEquals(1L, u.getArcWeight(w));
+        u.connectToBorrower(v);
+        u.setWeightTo(v, 2L);
+        v.connectToBorrower(w);
+        v.setWeightTo(w, 1L);
+        
+        assertEquals(2L, u.getWeightTo(v));
+        assertEquals(1L, v.getWeightTo(w));
     }
 
     @Test
     public void testToString() {
-        assertEquals("[Node A; equity: 0 ]", u.toString());
-        u.connectToBorrower(v, 7L);
-        u.connectToBorrower(w, 4L);
-        v.connectToBorrower(u, 1L);
-        assertEquals("[Node A; equity: 10 ]", u.toString());
-    }
-
-    @Test
-    public void testHashCode() {
-        Node other = new Node("A");
-        assertTrue(other.hashCode() == u.hashCode());
-        other.connectToBorrower(v, 3L);
-        u.connectToBorrower(w, 5L);
-        assertTrue(other.hashCode() == u.hashCode());
+        Graph g = new Graph();
+        
+        g.add(u);
+        g.add(v);
+        g.add(w);
+        
+        assertEquals("[Node A; equity: 0]", u.toString());
+        
+        u.connectToBorrower(v);
+        u.connectToBorrower(w);
+        v.connectToBorrower(u);
+        
+        u.connectToBorrower(v);
+        u.connectToBorrower(w);
+        v.connectToBorrower(u);
+        
+        u.setWeightTo(v, 7L);
+        u.setWeightTo(w, 4L);
+        v.setWeightTo(u, 1L);
+        
+        assertEquals("[Node A; equity: 10]", u.toString());
     }
 
     @Test
@@ -103,8 +128,12 @@ public class NodeTest {
 
     @Test
     public void testIterator() {
+        g.add(u);
+        g.add(v);
+        g.add(w);
+        
         int count = 0;
-
+        
         for (Node n : u) {
             count++;
         }
@@ -112,8 +141,9 @@ public class NodeTest {
         assertEquals(0, count);
 
         count = 0;
-        u.connectToBorrower(v, 5L);
-
+        u.connectToBorrower(v);
+        u.setWeightTo(v, 5L);
+        
         for (Node n : u) {
             assertTrue(n == v);
             count++;
@@ -123,7 +153,8 @@ public class NodeTest {
 
         count = 0;
 
-        u.connectToBorrower(w, 4L);
+        u.connectToBorrower(w);
+        u.setWeightTo(w, 4L);
 
         for (Node n : u) {
             count++;
@@ -134,27 +165,56 @@ public class NodeTest {
 
     @Test
     public void testGetEquity() {
+        g.add(u);
+        g.add(v);
+        g.add(w);
+        
         assertEquals(u.getEquity(), 0L);
-        u.connectToBorrower(v, 4L);
+        
+        u.connectToBorrower(v);
+        u.setWeightTo(v, 4L);
+        
         assertEquals(u.getEquity(), 4L);
-        u.connectToBorrower(w, 3L);
+        
+        u.connectToBorrower(w);
+        u.setWeightTo(w, 3L);
+        
         assertEquals(u.getEquity(), 7L);
-        v.connectToBorrower(u, 5L);
+        
+        v.connectToBorrower(u);
+        v.setWeightTo(u, 5L);
+        
         assertEquals(u.getEquity(), 2L);
-        w.connectToBorrower(u, 9L);
+        
+        w.connectToBorrower(u);
+        w.setWeightTo(u, 9L);
+        
         assertEquals(u.getEquity(), -7L);
     }
 
     @Test
     public void testIterators() {
-        u.connectToBorrower(v, 4L);
-        u.connectToBorrower(w, 5L);
-        v.connectToBorrower(u, 3L);
-        v.connectToBorrower(w, 1L);
-        w.connectToBorrower(u, 3L);
-        w.connectToBorrower(v, 7L);
+        Graph g = new Graph();
         
-        List<Node> nodes = new ArrayList<Node>();
+        g.add(u);
+        g.add(v);
+        g.add(w);
+        
+        u.connectToBorrower(v);
+        u.connectToBorrower(w);
+        v.connectToBorrower(u);
+        v.connectToBorrower(w);
+        w.connectToBorrower(u);
+        w.connectToBorrower(v);
+        
+        u.setWeightTo(v, 4L);
+        u.setWeightTo(w, 5L);
+        v.setWeightTo(u, 3L);
+        v.setWeightTo(w, 1L);
+        w.setWeightTo(u, 3L);
+        w.setWeightTo(v, 7L);
+        
+        List<Node> nodes = new ArrayList<>();
         
         for (Node n : u) {
             nodes.add(n);

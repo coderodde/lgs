@@ -223,24 +223,24 @@ public class Utils {
         int pi = 0;
         int ni = 0;
         int edgeAmount = 0;
-
-        final int nPositive = positiveEquityArray.length;
+        int nPositive = positiveEquityArray.length;
 
         while (pi < nPositive) {
             ++edgeAmount;
+            Node positiveNode = positiveNodeList.get(pi);
+            Node negativeNode = negativeNodeList.get(ni);
 
             if (positiveEquityArray[pi] > negativeEquityArray[ni]) {
-                positi
-                positiveNodeList.get(pi).connectToBorrower(negativeNodeList.get(ni),
-                                                   negativeEquityArray[ni]);
+                positiveNode.connectToBorrower(negativeNode);
+                positiveNode.setWeightTo(negativeNode, negativeEquityArray[ni]);
                 positiveEquityArray[pi] -= negativeEquityArray[ni++];
             } else if (positiveEquityArray[pi] < negativeEquityArray[ni]) {
-                positiveNodeList.get(pi).connectToBorrower(negativeNodeList.get(ni),
-                                                   positiveEquityArray[pi]);
+                positiveNode.connectToBorrower(negativeNode);
+                positiveNode.setWeightTo(negativeNode, positiveEquityArray[pi]);
                 negativeEquityArray[ni] -= positiveEquityArray[pi++];
             } else {
-                positiveNodeList.get(pi).connectToBorrower(negativeNodeList.get(ni),
-                                                   positiveEquityArray[pi]);
+                positiveNode.connectToBorrower(negativeNode);
+                positiveNode.setWeightTo(negativeNode, positiveEquityArray[pi]);
                 ++pi;
                 ++ni;
             }

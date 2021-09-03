@@ -16,18 +16,25 @@ public class IterativeDepthFirstSearchTest {
         Graph g = new Graph();
         Node nodeA = new Node("A");
         g.add(nodeA);
-        nodeA.connectToBorrower(nodeA, 2L);
+        nodeA.connectToBorrower(nodeA);
+        nodeA.setWeightTo(nodeA, 2L);
     }
     
     @Test
     public void findCycles1() {
         Graph g = new Graph();
+        
         Node nodeA = new Node("A");
         Node nodeB = new Node("B");
+        
         g.add(nodeA);
         g.add(nodeB);
-        nodeA.connectToBorrower(nodeB, 2L);
-        nodeB.connectToBorrower(nodeA, 3L);
+        
+        nodeA.connectToBorrower(nodeB);
+        nodeB.connectToBorrower(nodeA);
+        
+        nodeA.setWeightTo(nodeB, 2L);
+        nodeB.setWeightTo(nodeA, 3L);
         
         List<Node> cycle = dfs.findCycle(g);
         
@@ -47,9 +54,13 @@ public class IterativeDepthFirstSearchTest {
         g.add(nodeB);
         g.add(nodeC);
         
-        nodeA.connectToBorrower(nodeB, 2L);
-        nodeB.connectToBorrower(nodeC, 3L);
-        nodeC.connectToBorrower(nodeA, 4L);
+        nodeA.connectToBorrower(nodeB);
+        nodeB.connectToBorrower(nodeC);
+        nodeC.connectToBorrower(nodeA);
+        
+        nodeA.setWeightTo(nodeB, 2L);
+        nodeB.setWeightTo(nodeC, 3L);
+        nodeC.setWeightTo(nodeA, 4L);
         
         List<Node> cycle = dfs.findCycle(g);
         
@@ -72,13 +83,21 @@ public class IterativeDepthFirstSearchTest {
         g.add(nodeC);
         g.add(nodeD);
         
-        nodeA.connectToBorrower(nodeB, 2L);
-        nodeB.connectToBorrower(nodeC, 3L);
-        nodeC.connectToBorrower(nodeA, 10L);
+        nodeA.connectToBorrower(nodeB);
+        nodeB.connectToBorrower(nodeC);
+        nodeC.connectToBorrower(nodeA);
         
-        nodeA.connectToBorrower(nodeD, 2L);
-        nodeD.connectToBorrower(nodeC, 3L);
-        nodeC.connectToBorrower(nodeA, 10L);
+        nodeA.setWeightTo(nodeB, 2L);
+        nodeB.setWeightTo(nodeC, 3L);
+        nodeC.setWeightTo(nodeA, 10L);
+        
+        nodeA.connectToBorrower(nodeD);
+        nodeD.connectToBorrower(nodeC);
+        nodeC.connectToBorrower(nodeA);
+        
+        nodeA.setWeightTo(nodeD, 2L);
+        nodeD.setWeightTo(nodeC, 3L);
+        nodeC.setWeightTo(nodeA, 10L);
         
         List<Node> cycle = dfs.findCycle(g);
         
@@ -124,10 +143,15 @@ public class IterativeDepthFirstSearchTest {
         g.add(b);
         g.add(c);
         
-        root.connectToBorrower(a, 1L);
-        a.connectToBorrower(b, 1L);
-        b.connectToBorrower(c, 1L);
-        c.connectToBorrower(a, 1L);
+        root.connectToBorrower(a);
+        a.connectToBorrower(b);
+        b.connectToBorrower(c);
+        c.connectToBorrower(a);
+        
+        root.setWeightTo(a, 1L);
+        a.setWeightTo(b, 1L);
+        b.setWeightTo(c, 1L);
+        c.setWeightTo(a, 1L);
         
         List<Node> cycle = dfs.findCycle(g);
         

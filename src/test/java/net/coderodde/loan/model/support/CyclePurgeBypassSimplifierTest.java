@@ -23,9 +23,13 @@ public class CyclePurgeBypassSimplifierTest {
         g.add(b);
         g.add(c);
         
-        a.connectToBorrower(b, 3L);
-        b.connectToBorrower(c, 2L);
-        c.connectToBorrower(a, 1L);
+        a.connectToBorrower(b);
+        b.connectToBorrower(c);
+        c.connectToBorrower(a);
+        
+        a.setWeightTo(b, 3L);
+        b.setWeightTo(c, 2L);
+        c.setWeightTo(a, 1L);
         
         Graph result = new CyclePurgeBypassSimplifier().simplify(g);
         
@@ -34,8 +38,8 @@ public class CyclePurgeBypassSimplifierTest {
         assertEquals(3, result.size());
         assertEquals(2, result.getEdgeAmount());
         
-        assertEquals(1L, a.getArcWeight(c));
-        assertEquals(1L, b.getArcWeight(c));
+        assertEquals(1L, a.getWeightTo(c));
+        assertEquals(1L, b.getWeightTo(c));
         
         assertEquals(2L, result.getTotalFlow());
     }
