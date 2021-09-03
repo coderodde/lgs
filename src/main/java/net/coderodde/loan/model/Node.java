@@ -119,7 +119,7 @@ public class Node implements Iterable<Node> {
         long weightDelta = weight - oldWeight;
         ownerGraph.flow += weightDelta;
         equity += weightDelta;
-        borrower.equity -= weight;
+        borrower.equity -= weightDelta;
     }
 
     /**
