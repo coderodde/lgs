@@ -39,4 +39,15 @@ nodeC.setWeightTo(nodeA, 1L);
 
 // If needed, copy with both nodes and corresponding arcs:
 Graph copyGraph  = new Graph(graph);
+
+```
+Then, you are almost done:
+```
+import net.coderodde.loan.model.Algorithm;
+import net.coderodde.loan.model.LinearSimplifier;
+...
+Algorithm alg = new LinearSimplifier();
+Graph result = alg.simplicy(graph);
+// Should return tryu:
+result.isEquivalent(graph);
 ```
