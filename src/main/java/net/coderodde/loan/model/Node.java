@@ -13,24 +13,24 @@ import java.util.NoSuchElementException;
  * @since 1.6
  */
 public class Node implements Iterable<Node> {
-    
+
     /**
      * This is the name of a node. Also, this is treated as the ID of a 
      * node. (Two nodes <code>u</code>, <code>v</code> are considered as 
      * equal if and only if <code>u.name.equals(v.name)</code>.
      */
     private final String name;
-    
+
     /**
      * This is the map from lender to loan amount.
      */
     private final Map<Node, Long> in = new HashMap<>();
-    
+
     /**
      * This is the map from borrower to resources lent.
      */
     private final Map<Node, Long> out = new HashMap<>();
-    
+
     /**
      * The graph owning this node, if any.
      */
@@ -50,7 +50,7 @@ public class Node implements Iterable<Node> {
     public Node(String name) {
         this.name = name;
     }
-    
+
     /**
      * Copy-constructs a node.
      * 
@@ -99,7 +99,7 @@ public class Node implements Iterable<Node> {
         checkBorrowerExists(borrower);
         return this.out.get(borrower);
     }
-    
+
     /**
      * Sets the weight of the directed arc {@code (this, borrower)}.
      * 
@@ -110,9 +110,9 @@ public class Node implements Iterable<Node> {
         checkBorrowerNotNull(borrower);
         checkBorrowerBelongsToThisGraph(borrower);
         checkBorrowerExists(borrower);
-        
+
         long oldWeight = this.out.get(borrower);
-        
+
         this.out.put(borrower, weight);
         borrower.in.put(this, weight);
         //            50 = 100 - 50
@@ -130,25 +130,25 @@ public class Node implements Iterable<Node> {
     public void connectToBorrower(Node borrower) {
         checkBorrowerNotNull(borrower);
         checkBorrowerBelongsToThisGraph(borrower);
-        
+
         if (out.containsKey(borrower)) {
             return;
         }
-        
+
         if (borrower.ownerGraph != this.ownerGraph) {
             borrower.ownerGraph = this.ownerGraph;
             borrower.clear();
         } 
-        
+
         out.put(borrower, 0L);
         borrower.in.put(this, 0L);
         ownerGraph.edgeAmount++;
     }
-    
+
     public boolean isConnectedTo(Node borrower) {
         return out.containsKey(borrower);
     }
-    
+
     /**
      * Remove the borrower of this node.
      * 
@@ -156,11 +156,11 @@ public class Node implements Iterable<Node> {
      */
     public void removeBorrower(final Node borrower) {
         checkBorrowerNotNull(borrower);
-        
+
         if (borrower.ownerGraph != this.ownerGraph) {
             return;
         }
-        
+
         if (out.containsKey(borrower)) {
             long w = out.get(borrower);
             out.remove(borrower);
@@ -190,11 +190,11 @@ public class Node implements Iterable<Node> {
             iterator.remove();
         }
     }
-    
+
     public boolean isOrphan() {
         return ownerGraph == null;
     }
-    
+
     private void checkBorrowerBelongsToThisGraph(final Node borrower) {
         if (borrower.ownerGraph != this.ownerGraph) {
             throw new IllegalStateException("The input borrower node " +
@@ -283,7 +283,7 @@ public class Node implements Iterable<Node> {
          * The actual iterator.
          */
         private Iterator<Node> iterator = Node.this.out.keySet().iterator();
-        
+
         /**
          * Holds the node last returned by <code>next</code>.
          */
@@ -337,7 +337,7 @@ public class Node implements Iterable<Node> {
      * Returns the iterable over this node's lenders.
      */
     private class ParentIterable implements Iterable<Node> {
-        
+
         /**
          * Returns the iterator over this node's lenders.
          * 
@@ -358,7 +358,7 @@ public class Node implements Iterable<Node> {
          * The actual iterator.
          */
         private Iterator<Node> iterator = Node.this.in.keySet().iterator();
-        
+
         /**
          * The node last returned.
          */
@@ -399,7 +399,7 @@ public class Node implements Iterable<Node> {
             }
 
             final long weight = lastReturned.getWeightTo(Node.this);
-            
+
             iterator.remove();
             lastReturned.out.remove(Node.this);
             lastReturned = null;
@@ -410,14 +410,14 @@ public class Node implements Iterable<Node> {
             }
         }
     }
-    
+
     private void checkBorrowerExists(Node borrower) {
         if (!out.containsKey(borrower)) {
             throw new IllegalArgumentException(
                     "No arc (" + this + ", " + borrower + ").");
         }
     }
-    
+
     private void checkWeightDelta(final Node borrower, final long weightDelta) {
         if (out.get(borrower) + weightDelta < 0L) {
             throw new IllegalArgumentException(

@@ -51,36 +51,36 @@ public class Graph implements Iterable<Node> {
      */
     public Graph(Graph copy) {
         Map<Node, Node> map = new HashMap<>(nodeList.size());
-        
+
         for (Node node : copy) {
             Node newNode = new Node(node);
             map.put(node, newNode);
             add(newNode);
         }
-        
+
         for (Node node : copy) {
             Node tail = map.get(node);
-            
+
             for (Node borrower : node) {
                 Node head = map.get(borrower);
                 tail.connectToBorrower(head);
                 tail.setWeightTo(head, node.getWeightTo(borrower));
             }
         }
-        
+
         this.edgeAmount = copy.edgeAmount;
     }
-    
+
     public Graph copyWithoutArcs() {
         Graph result = new Graph();
-        
+
         for (Node node : this) {
             result.add(new Node(node));
         }
-        
+
         return result;
     }
-    
+
     @Override
     public String toString() {
         return "[" + nodeList.size() + " nodes, " + edgeAmount + " edges, " + 
@@ -89,19 +89,19 @@ public class Graph implements Iterable<Node> {
 
     public String toDetailedString() {
         StringBuilder stringBuilder = new StringBuilder();
-        
+
         for (Node node : this) {
             Graph.this.toDetailedString(node, stringBuilder);
         }
-        
+
         return stringBuilder.toString();
     }
-    
+
     private static void toDetailedString(
             Node node, 
             StringBuilder stringBuilder) {
         stringBuilder.append(node).append("\n");
-        
+
         for (Node child : node) {
             stringBuilder.append("    Node ")
                          .append(child.getName())
@@ -110,7 +110,7 @@ public class Graph implements Iterable<Node> {
                          .append("\n");
         }
     }
-    
+
     /**
      * Adds a node to this graph if not already in this graph.
      *
@@ -118,17 +118,17 @@ public class Graph implements Iterable<Node> {
      */
     public void add(Node node) {
         Objects.requireNonNull(node, "The input node is null.");
-        
+
         if (node.ownerGraph != this && node.ownerGraph != null) {
             throw new IllegalArgumentException(
                     "The input node belongs to some another graph.");
         }
-        
+
         if (nodeMap.containsKey(node.getName())) {
             // Already in this graph.
             return;
         }
-        
+
         node.clear();
         node.ownerGraph = this;
         nodeMap.put(node.getName(), node);
@@ -144,11 +144,11 @@ public class Graph implements Iterable<Node> {
      */
     public boolean contains(Node node) {
         Objects.requireNonNull(node, "The input node is null.");
-        
+
         if (node.ownerGraph != this) {
             return false;
         }
-       
+
         return nodeMap.containsKey(node.getName());
     }
 
@@ -183,7 +183,7 @@ public class Graph implements Iterable<Node> {
             throw new IllegalArgumentException(
                     "The input node does not belong to this graph.");
         }
-        
+
         if (nodeMap.containsKey(node.getName())) {
             nodeMap.remove(node.getName());
             nodeList.remove(node);
@@ -248,7 +248,7 @@ public class Graph implements Iterable<Node> {
 
         return true;
     }
-    
+
     /**
      * This class implements the iterators over this graph's nodes.
      */
@@ -304,7 +304,7 @@ public class Graph implements Iterable<Node> {
             lastReturned = null;
         }
     }
-    
+
     private void checkNodeBelongsToThisGraph(Node node) {
         if (node.ownerGraph != this) {
             throw new IllegalArgumentException(

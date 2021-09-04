@@ -5,11 +5,8 @@ import net.coderodde.loan.model.Algorithm;
 import net.coderodde.loan.model.Graph;
 import net.coderodde.loan.model.Node;
 import net.coderodde.loan.model.support.CyclePurgeBypassSimplifier;
-import net.coderodde.loan.model.support.ExactCombinatorialSimplifier;
-import net.coderodde.loan.model.support.FasterExactCombinatorialSimplifier;
 import net.coderodde.loan.model.support.GreedyCombinatorialSimplifier;
 import net.coderodde.loan.model.support.LinearSimplifier;
-import net.coderodde.loan.model.support.PartitionalSimplifier;
 
 /**
  * This class is the entry for performance demo.
@@ -23,7 +20,7 @@ public class Demo {
         title("Profiling the simplification algorithms");
 
         final long SEED = System.currentTimeMillis();
-        final int N = 100;
+        final int N = 200;
         final Random r = new Random(SEED);
 
         System.out.println("Seed: " + SEED);
@@ -39,9 +36,6 @@ public class Demo {
         profile(new LinearSimplifier(), input);
         profile(new GreedyCombinatorialSimplifier(), input);
         profile(new CyclePurgeBypassSimplifier(), input);
-//        profile(new FasterExactCombinatorialSimplifier(), input);
-//        profile(new ExactCombinatorialSimplifier(), input);
-//        profile(new PartitionalSimplifier(), input);
 
         bar();
 
@@ -102,7 +96,7 @@ public class Demo {
 
     private static final void titleImpl(String s, char c) {
         StringBuilder sb = new StringBuilder(BAR_LENGTH);
-        final int left = (BAR_LENGTH - s.length() - 2) >> 1;
+        final int left = (BAR_LENGTH - s.length() - 2) / 2;
         final int right = BAR_LENGTH - s.length() - 2 - left;
 
         for (int i = 0; i < left; ++i) {

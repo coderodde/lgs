@@ -27,20 +27,20 @@ public final class CyclePurgeBypassSimplifier implements Algorithm {
     @Override
     public Graph simplify(Graph g) {
         Graph resultGraph = new Graph(g);
-        
+
         if (g.size() < 2) {
             return resultGraph;
         }
-        
+
         RecursiveDepthFirstSearch rdfs = new RecursiveDepthFirstSearch();
         List<Node> cycle;
-        
+
         while ((cycle = rdfs.findCycle(resultGraph)) != null) {
             resolveCycle(cycle);
         }
-        
+
         Triple<Node, Node, Node> arcChainToBypass;
-        
+
         while ((arcChainToBypass = findArcChain(resultGraph)) != null) {
             resolveArcChain(arcChainToBypass.first,
                             arcChainToBypass.second,
@@ -49,22 +49,22 @@ public final class CyclePurgeBypassSimplifier implements Algorithm {
 
         return resultGraph;
     }
-    
+
     private static void resolveCycle(List<Node> cycle) {
         long minimumWeight = Long.MAX_VALUE;
-        
+
         for (int i = 0; i < cycle.size(); i++) {
             Node lender = cycle.get(i);
             Node borrower = cycle.get((i + 1) % cycle.size());
             long arcWeight = lender.getWeightTo(borrower);
             minimumWeight = Math.min(minimumWeight, arcWeight);
         }
-        
+
         for (int i = 0; i < cycle.size(); i++) {
             Node lender = cycle.get(i);
             Node borrower = cycle.get((i + 1) % cycle.size());
             long arcWeight = lender.getWeightTo(borrower);
-            
+
             if (arcWeight == minimumWeight) {
                 // Remove the minimum weight arc:
                 lender.removeBorrower(borrower);
@@ -76,41 +76,41 @@ public final class CyclePurgeBypassSimplifier implements Algorithm {
             }
         }
     }
-    
+
     private static Triple<Node, Node, Node> findArcChain(Graph graph) {
         for (Node root : graph) {
             return findArcChainImpl(root);
         }
-        
+
         return null;
     }
-    
+
     private static Triple<Node, Node, Node> findArcChainImpl(Node root) {
         for (Node child : root) {
             for (Node grandChild : child) {
                 return new Triple<>(root, child, grandChild);
             }
         }
-        
+
         return null;
     }
-    
+
     private static void resolveArcChain(Node n1, Node n2, Node n3) {
         long weightN1N2 = n1.getWeightTo(n2);
         long weightN2N3 = n2.getWeightTo(n3);
         long minimumWeight = Math.min(weightN1N2, weightN2N3);
-        
+
         n1.setWeightTo(n2, n1.getWeightTo(n2) - minimumWeight);
         n2.setWeightTo(n3, n2.getWeightTo(n3) - minimumWeight);
-        
+
         if (n1.getWeightTo(n2) == 0L) {
             n1.removeBorrower(n2);
         }
-        
+
         if (n2.getWeightTo(n3) == 0L) {
             n2.removeBorrower(n3);
         }
-        
+
         if (n1.isConnectedTo(n3)) {
             n1.setWeightTo(n3, n1.getWeightTo(n3) + minimumWeight);
         } else {
