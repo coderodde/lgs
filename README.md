@@ -10,3 +10,33 @@ Two loan graphs `G = (V, A)` and `D = (W, B)` are ***equivalent***, if all the f
 2. For all `u` in `V` we have `e(u) = e(f(u))`.
 
 Since we exclude self loops, the maximum number of arcs in a loan graph `G` is `n^2 - n`, where `n = |V|`. It is, however, possible to remove/rearrange the arcs such that the number of arcs will be linear in the number of nodes, and that is what this library aims to achieve.
+
+## Using `lgs`
+
+First, you need a graph:
+```
+import net.coderodde.loan.model.Graph;
+...
+Graph graph = new Graph();
+
+Node nodeA = new Node("A");
+Node nodeB = new Node("B");
+Node nodeC = new Node("C");
+
+graph.add(nodeA);
+graph.add(nodeB);
+graph.add(nodeC);
+
+// Create "empty" arcs:
+nodeA.connectToBorrower(nodeB);
+nodeB.connectToBorrower(nodeC);
+nodeC.connectToBorrower(nodeA);
+
+// Set arc weights:
+nodeA.setWeightTo(nodeB, 3L);
+nodeB.setWeightTo(nodeC, 2L);
+nodeC.setWeightTo(nodeA, 1L);
+
+// If needed, copy with both nodes and corresponding arcs:
+Graph copyGraph  = new Graph(graph);
+```
