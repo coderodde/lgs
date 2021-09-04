@@ -71,6 +71,16 @@ public class Graph implements Iterable<Node> {
         this.edgeAmount = copy.edgeAmount;
     }
     
+    public Graph copyWithoutArcs(Graph g) {
+        Graph result = new Graph();
+        
+        for (Node node : g) {
+            result.add(new Node(node));
+        }
+        
+        return result;
+    }
+    
     @Override
     public String toString() {
         return "[" + nodeList.size() + " nodes, " + edgeAmount + " edges, " + 

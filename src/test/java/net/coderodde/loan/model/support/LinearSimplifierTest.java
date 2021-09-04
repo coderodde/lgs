@@ -2,10 +2,14 @@ package net.coderodde.loan.model.support;
 
 import net.coderodde.loan.model.Graph;
 import net.coderodde.loan.model.Node;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class CyclePurgeBypassSimplifierTest {
+public class LinearSimplifierTest {
     
     @Test
     public void onThreeNodeGraph() {
@@ -27,7 +31,7 @@ public class CyclePurgeBypassSimplifierTest {
         b.setWeightTo(c, 2L);
         c.setWeightTo(a, 1L);
         
-        Graph result = new CyclePurgeBypassSimplifier().simplify(g);
+        Graph result = new LinearSimplifier().simplify(g);
         
         assertEquals(3, result.size());
         assertEquals(2, result.getEdgeAmount());
@@ -40,5 +44,7 @@ public class CyclePurgeBypassSimplifierTest {
         assertEquals(-1L, result.get(2).getEquity());
         
         assertEquals(2L, result.getTotalFlow());
+        
+        assertTrue(g.isEquivalentTo(result));
     }
 }

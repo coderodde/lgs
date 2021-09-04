@@ -227,6 +227,7 @@ public class Utils {
 
         while (pi < nPositive) {
             ++edgeAmount;
+            
             Node positiveNode = positiveNodeList.get(pi);
             Node negativeNode = negativeNodeList.get(ni);
 

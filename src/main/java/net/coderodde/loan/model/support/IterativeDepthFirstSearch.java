@@ -41,28 +41,39 @@ final class IterativeDepthFirstSearch {
         parentMap.put(root, null);
         
         while (!stack.isEmpty()) {
-            final Node node = stack.pop();
-                       // a      c
+            Node node = stack.pop();
+            
             for (Node borrower : node) {
                 if (!parentMap.containsKey(borrower)) {
                     stack.push(borrower);
                     parentMap.put(borrower, node);
                 } else {
-                    final List<Node> cycle = new ArrayList<>();
-                    Node n = node;
-                    
-                    do {
-                        cycle.add(n);
-                        n = parentMap.get(n);
-                    } while (n != borrower);
-                    
-                    cycle.add(borrower);
-                    Collections.reverse(cycle);
-                    return cycle;
+                    return tracebackCycle(borrower, node, parentMap);
                 }
             }
         }
         
         return null;
+    }
+    
+    private static List<Node> tracebackCycle(
+            Node root, // borrower
+            Node startNode, // node
+            Map<Node, Node> parentMap) {
+        
+        List<Node> cycleList = new ArrayList<>();
+        Set<Node> cycleSet = new HashSet<>();
+        cycleSet.add(root);
+        Node currentNode = startNode;
+
+        while (!cycleSet.contains(currentNode)) {
+            cycleList.add(currentNode);
+            cycleSet.add(currentNode);
+            currentNode = parentMap.get(currentNode);
+        }
+
+        cycleList.add(root);
+        Collections.reverse(cycleList);
+        return cycleList;
     }
 }
