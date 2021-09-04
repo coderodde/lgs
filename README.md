@@ -11,6 +11,8 @@ Two loan graphs `G = (V, A)` and `D = (W, B)` are ***equivalent***, if all the f
 
 Since we exclude self loops, the maximum number of arcs in a loan graph `G` is `n^2 - n`, where `n = |V|`. It is, however, possible to remove/rearrange the arcs such that the number of arcs will be linear in the number of nodes, and that is what this library aims to achieve.
 
+For more thorough discussion, see [this WordPres blog](https://coderodde.wordpress.com/2015/07/20/minimizing-the-amount-of-bank-transactions-in-a-static-loan-graph/).
+
 ## Using `lgs`
 
 First, you need a graph:
@@ -51,4 +53,3 @@ Graph result = alg.simplicy(graph);
 // Should return true:
 result.isEquivalent(graph);
 ```
-(For more thorough discussion, see [this WordPres blog](https://coderodde.wordpress.com/2015/07/20/minimizing-the-amount-of-bank-transactions-in-a-static-loan-graph/).)
