@@ -61,9 +61,9 @@ public final class CyclePurgeBypassSimplifier implements Algorithm {
         }
         
         for (int i = 0; i < cycle.size(); i++) {
-            final Node lender = cycle.get(i);
-            final Node borrower = cycle.get((i + 1) % cycle.size());
-            final long arcWeight = lender.getWeightTo(borrower);
+            Node lender = cycle.get(i);
+            Node borrower = cycle.get((i + 1) % cycle.size());
+            long arcWeight = lender.getWeightTo(borrower);
             
             if (arcWeight == minimumWeight) {
                 // Remove the minimum weight arc:

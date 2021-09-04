@@ -25,7 +25,7 @@ public class GreedyCombinatorialSimplifier implements Algorithm {
 
     @Override
     public Graph simplify(Graph g) {
-        Graph ret = new Graph(g);
+        Graph ret = g.copyWithoutArcs();
 
         if (g.size() < 2) {
             return ret;

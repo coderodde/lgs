@@ -71,10 +71,10 @@ public class Graph implements Iterable<Node> {
         this.edgeAmount = copy.edgeAmount;
     }
     
-    public Graph copyWithoutArcs(Graph g) {
+    public Graph copyWithoutArcs() {
         Graph result = new Graph();
         
-        for (Node node : g) {
+        for (Node node : this) {
             result.add(new Node(node));
         }
         
@@ -87,6 +87,30 @@ public class Graph implements Iterable<Node> {
                flow + " flow]";
     }
 
+    public String toDetailedString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        
+        for (Node node : this) {
+            Graph.this.toDetailedString(node, stringBuilder);
+        }
+        
+        return stringBuilder.toString();
+    }
+    
+    private static void toDetailedString(
+            Node node, 
+            StringBuilder stringBuilder) {
+        stringBuilder.append(node).append("\n");
+        
+        for (Node child : node) {
+            stringBuilder.append("    Node ")
+                         .append(child.getName())
+                         .append(", w = ")
+                         .append(node.getWeightTo(child))
+                         .append("\n");
+        }
+    }
+    
     /**
      * Adds a node to this graph if not already in this graph.
      *

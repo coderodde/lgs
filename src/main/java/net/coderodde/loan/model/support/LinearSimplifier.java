@@ -21,7 +21,7 @@ public class LinearSimplifier implements Algorithm {
 
     @Override
     public Graph simplify(Graph g) {
-        Graph resultGraph = g.copyWithoutArcs(g);
+        Graph resultGraph = g.copyWithoutArcs();
 
         if (g.size() < 2) {
             return resultGraph;

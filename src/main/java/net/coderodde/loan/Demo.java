@@ -22,14 +22,17 @@ public class Demo {
     public static void main(String... args) {
         title("Profiling the simplification algorithms");
 
-        final long SEED = System.currentTimeMillis();
-        final int N = 13;
+        final long SEED = 1630729984719L; // System.currentTimeMillis();
+        final int N = 4;
         final Random r = new Random(SEED);
 
         System.out.println("Seed: " + SEED);
-
+       
         Graph input = createGraph(N, 0.5f, 30L, r);
 
+        System.out.println("--- The input graph ---");
+        System.out.println(input.toDetailedString());
+        
         System.out.println(
                 "Amount of edges in the input graph: " + input.getEdgeAmount());
 
@@ -41,7 +44,7 @@ public class Demo {
         profile(new CyclePurgeBypassSimplifier(), input);
 //        profile(new FasterExactCombinatorialSimplifier(), input);
 //        profile(new ExactCombinatorialSimplifier(), input);
-        profile(new PartitionalSimplifier(), input);
+//        profile(new PartitionalSimplifier(), input);
 
         bar();
 

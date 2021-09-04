@@ -29,7 +29,7 @@ public class LinearSimplifierTest {
         
         a.setWeightTo(b, 3L);
         b.setWeightTo(c, 2L);
-        c.setWeightTo(a, 1L);
+            c.setWeightTo(a, 1L);
         
         Graph result = new LinearSimplifier().simplify(g);
         
