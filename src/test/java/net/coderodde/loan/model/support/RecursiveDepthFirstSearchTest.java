@@ -173,4 +173,41 @@ public class RecursiveDepthFirstSearchTest {
         assertEquals(b, cycle.get(1));
         assertEquals(c, cycle.get(2));
     }
+    
+    @Test
+    public void bug1() {
+        Graph g = new Graph();
+        
+        Node node0 = new Node("0");
+        Node node1 = new Node("1");
+        Node node2 = new Node("2");
+        Node node3 = new Node("3");
+        
+        g.add(node0);
+        g.add(node1);
+        g.add(node2);
+        g.add(node3);
+        
+        node1.connectToBorrower(node2);
+        node1.connectToBorrower(node0);
+        
+        node1.setWeightTo(node2, 15);
+        node1.setWeightTo(node0, 13);
+        
+        node2.connectToBorrower(node0);
+        node2.connectToBorrower(node3);
+        
+        node2.setWeightTo(node0, 20);
+        node2.setWeightTo(node3, 24);
+        
+        node3.connectToBorrower(node1);
+        node3.setWeightTo(node1, 5);
+        
+        List<Node> cycle = dfs.findCycle(g);
+        
+        assertEquals(3, cycle.size());
+        assertEquals(node1, cycle.get(0));
+        assertEquals(node2, cycle.get(1));
+        assertEquals(node3, cycle.get(2));
+    }
 }

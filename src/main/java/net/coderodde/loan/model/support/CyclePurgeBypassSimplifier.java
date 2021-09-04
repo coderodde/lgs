@@ -32,10 +32,10 @@ public final class CyclePurgeBypassSimplifier implements Algorithm {
             return resultGraph;
         }
         
-        IterativeDepthFirstSearch idfs = new IterativeDepthFirstSearch();
+        RecursiveDepthFirstSearch rdfs = new RecursiveDepthFirstSearch();
         List<Node> cycle;
         
-        while ((cycle = idfs.findCycle(resultGraph)) != null) {
+        while ((cycle = rdfs.findCycle(resultGraph)) != null) {
             resolveCycle(cycle);
         }
         
