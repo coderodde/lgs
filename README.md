@@ -48,6 +48,7 @@ import net.coderodde.loan.model.LinearSimplifier;
 ...
 Algorithm alg = new LinearSimplifier();
 Graph result = alg.simplicy(graph);
-// Should return tryu:
+// Should return true:
 result.isEquivalent(graph);
 ```
+(For more thorough discussion, see [this WordPres blog](https://coderodde.wordpress.com/2015/07/20/minimizing-the-amount-of-bank-transactions-in-a-static-loan-graph/).)
