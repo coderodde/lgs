@@ -5,7 +5,7 @@ A loan graph is an ordered pair `G = (V, A)`, where `V` is the set of nodes and 
 
 When constructing a loan graph by adding directed arcs, for each arc `a = (u, v)` with weight `w = w(u, v)`, the equity of `u` wiil grow by `w` resource units and the equity of `v` will reduce by `w` resource units. If we start constructing a loan graph from a fully disconnect loan graph, before and after adding each arc, the sum of equities over all nodes will always be zero.
 
-Two loan graphs `G = (V, A)` and `D = (W, B)` are said to be ***equivalent***, if there exists a injection `f` such that the following condition holds
+Two loan graphs `G = (V, A)` and `D = (W, B)` are said to be ***equivalent***, if there exists a bijection `f` such that the following condition holds
 
 For all `u` in `V` we have `e(u) = e(f(u))`.
 
