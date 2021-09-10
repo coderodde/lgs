@@ -18,6 +18,7 @@ For more thorough discussion, see [this WordPres blog](https://coderodde.wordpre
 First, you need a graph:
 ```
 import net.coderodde.loan.model.Graph;
+import net.coderodde.loan.model.Node;
 ...
 Graph graph = new Graph();
 
